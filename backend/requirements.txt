@@ -1,0 +1,41 @@
+# FastAPI and ASGI server
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.3
+pydantic-settings>=2.1.0
+
+# Database
+sqlalchemy[asyncio]==2.0.25
+aiosqlite==0.19.0
+# psycopg2-binary==2.9.9  # Commented out - using SQLite for MVP
+# asyncpg==0.29.0  # Commented out - using SQLite for MVP
+alembic==1.13.1
+
+# Authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.1.2  # passlib 1.7.4 用的 bcrypt.__about__ 在 5.0 移除，必须锁 4.x
+python-multipart==0.0.6
+
+# Environment and config
+python-dotenv==1.0.0
+
+# CORS and middleware
+# starlette==0.36.3  # Let pip resolve dependency
+
+# OCR and AI (optional for MVP)
+# paddlepaddle==2.6.0  # Commented out - OCR optional for MVP
+# paddleocr==2.7.0.3  # Commented out - OCR optional for MVP
+anthropic==0.8.1
+
+# Utilities
+httpx==0.26.0
+# pandas==2.1.4  # Commented out - optional for MVP
+# openpyxl==3.1.2  # Commented out - optional for MVP
+# xlrd==2.0.1  # Commented out - optional for MVP
+# requests==2.31.0  # Commented out - optional for MVP
+
+# Development
+pytest==7.4.4
+pytest-asyncio==0.23.3
+# httpx==0.26.0  # Commented out - duplicate
