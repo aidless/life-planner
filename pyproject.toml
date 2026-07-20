@@ -1,0 +1,43 @@
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+files = ["backend/app"]
+
+# SQLAlchemy 2.0 typed ORM Column[T] friction.
+# The official plugin only works via pyproject [tool.mypy.config_file.plugins],
+# which is fragile. Instead we just ignore the Column types globally — the
+# ORM objects *work* at runtime, only the static type is misleading.
+# TODO: migrate models to `Mapped[T]` syntax (SQLAlchemy 2.0 standard) for
+# clean type checking.
+
+[[tool.mypy.overrides]]
+module = "sqlalchemy.*"
+ignore_missing_imports = true
+
+# data_pipeline/ contains legacy scripts (monitors, processors, crawlers)
+# that pre-date the typed-ORM migration. They are not part of the
+# application runtime (only run via cron / CLI), so we exclude them
+# from strict mypy checks. Track in W26 follow-up to migrate.
+[[tool.mypy.overrides]]
+module = "data_pipeline.*"
+ignore_errors = true
+
+[tool.flake8]
+max-line-length = 120
+exclude = "*/__pycache__/*,*/data/*,*/.venv/*,*/migrations/*"
+ignore = [
+    "E501",
+    "F401",
+    "W291",
+    "E402",
+    "E731",
+]
+max-complexity = 10
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]

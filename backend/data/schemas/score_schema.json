@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "College Score Data Schema",
+  "description": "Schema for college admission score data",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["year", "province", "college_name", "major_name"],
+    "properties": {
+      "year": {
+        "type": "integer",
+        "description": "Admission year (e.g., 2025)",
+        "minimum": 2020,
+        "maximum": 2030
+      },
+      "province": {
+        "type": "string",
+        "description": "Province name (e.g., 山东)",
+        "minLength": 2,
+        "maxLength": 20
+      },
+      "college_name": {
+        "type": "string",
+        "description": "College name",
+        "minLength": 2,
+        "maxLength": 100
+      },
+      "major_name": {
+        "type": "string",
+        "description": "Major name",
+        "minLength": 2,
+        "maxLength": 100
+      },
+      "batch": {
+        "type": "string",
+        "description": "Batch (本科一批/本科二批)",
+        "maxLength": 50
+      },
+      "min_score": {
+        "type": "number",
+        "description": "Minimum admission score",
+        "minimum": 0,
+        "maximum": 750
+      },
+      "avg_score": {
+        "type": "number",
+        "description": "Average admission score",
+        "minimum": 0,
+        "maximum": 750
+      },
+      "max_score": {
+        "type": "number",
+        "description": "Maximum admission score",
+        "minimum": 0,
+        "maximum": 750
+      },
+      "rank_min": {
+        "type": "integer",
+        "description": "Minimum rank for admission",
+        "minimum": 1
+      },
+      "source": {
+        "type": "string",
+        "description": "Data source",
+        "maxLength": 100
+      }
+    }
+  }
+}

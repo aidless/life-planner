@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install system deps (for reportlab etc.)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfreetype6-dev
+
+      - name: Install Python deps
+        working-directory: backend
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install mypy flake8 pytest pytest-asyncio
+
+      - name: Run smoke tests
+        working-directory: backend
+        run: |
+          pytest tests/ -v --tb=short
+
+      - name: Type-check
+        working-directory: backend
+        run: |
+          cd ..
+          mypy --config-file pyproject.toml backend
+
+      - name: Lint (flake8)
+        working-directory: backend
+        run: |
+          cd ..
+          flake8 backend/app --count --statistics --max-line-length=120 --extend-ignore=E501,F401,W291,E402,E731
