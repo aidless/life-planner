@@ -1,0 +1,79 @@
+/* Dark mode 全局样式（通过 [data-theme="dark"] 触发） */
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #fafafa;
+  --text-primary: #1f1f1f;
+  --text-secondary: #595959;
+  --text-tertiary: #8c8c8c;
+  --border-color: #d9d9d9;
+  --border-light: #f0f0f0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #141414;
+  --bg-secondary: #1f1f1f;
+  --bg-tertiary: #262626;
+  --text-primary: #f5f5f5;
+  --text-secondary: #bfbfbf;
+  --text-tertiary: #8c8c8c;
+  --border-color: #424242;
+  --border-light: #303030;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+}
+
+/* 应用变量 */
+body {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ant-layout {
+  background: var(--bg-secondary);
+}
+
+.ant-layout-content {
+  background: var(--bg-secondary);
+}
+
+.ant-card {
+  background: var(--bg-primary);
+  border-color: var(--border-light);
+}
+
+.ant-modal-content,
+.ant-modal-header {
+  background: var(--bg-primary) !important;
+}
+
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector,
+.ant-picker {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-table {
+  background: var(--bg-primary);
+}
+
+.ant-table-thead > tr > th {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-color: var(--border-light) !important;
+}
+
+.ant-empty-description {
+  color: var(--text-tertiary) !important;
+}
+
+.ant-typography {
+  color: var(--text-primary);
+}
