@@ -1,0 +1,81 @@
+# Production deployment configuration
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: ../deploy/Dockerfile.backend
+    container_name: life-planner-backend-prod
+    restart: unless-stopped
+    environment:
+      # Database - use PostgreSQL in production
+      DATABASE_URL: postgresql+asyncpg://${DB_USER:-lifeplanner}:${DB_PASSWORD:-lifeplanner123}@db:5432/${DB_NAME:-life_planner}
+      
+      # Application
+      APP_NAME: Life Planner
+      APP_VERSION: 1.0.0
+      DEBUG: "false"
+      HOST: 0.0.0.0
+      PORT: 8000
+      
+      # JWT
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-this-in-production}
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_DAYS: 30
+      
+      # CORS
+      CORS_ORIGINS: '["http://localhost","http://frontend:80"]'
+      
+      # AI Services
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      
+      # File Upload
+      UPLOAD_DIR: /app/uploads
+      MAX_UPLOAD_SIZE: 10485760
+      
+      # Timezone
+      TZ: Asia/Shanghai
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend_uploads:/app/uploads
+      - backend_logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - life-planner-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../deploy/Dockerfile.frontend
+    container_name: life-planner-frontend-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      TZ: Asia/Shanghai
+    ports:
+      - "5173:80"
+    networks:
+      - life-planner-network
+    depends_on:
+      - backend
+
+  nginx:
+    profiles: []
+    # Disable nginx in production (frontend serves directly)
+
+networks:
+  life-planner-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  backend_uploads:
+    driver: local
+  backend_logs:
+    driver: local
