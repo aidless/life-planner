@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Province Rank Data Schema",
+  "description": "Schema for province rank data (一分一段表)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["year", "province", "score", "rank"],
+    "properties": {
+      "year": {
+        "type": "integer",
+        "description": "Exam year (e.g., 2025)",
+        "minimum": 2020,
+        "maximum": 2030
+      },
+      "province": {
+        "type": "string",
+        "description": "Province name (e.g., 山东)",
+        "minLength": 2,
+        "maxLength": 20
+      },
+      "score": {
+        "type": "integer",
+        "description": "Total score",
+        "minimum": 0,
+        "maximum": 750
+      },
+      "rank": {
+        "type": "integer",
+        "description": "Rank corresponding to the score",
+        "minimum": 1
+      },
+      "batch_category": {
+        "type": "string",
+        "description": "Batch category (物理类/历史类)",
+        "maxLength": 50
+      }
+    }
+  }
+}
