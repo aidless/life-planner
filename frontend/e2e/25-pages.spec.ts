@@ -1,5 +1,6 @@
 /**
- * 22 页面 e2e 测试
+ * 25 页面 e2e 测试（P6 由 22-pages.spec.ts 改名：P4 起 PAGES 已有 25 项，
+ * 25 页 + 404 + 401 = 27 用例；旧名是历史残留）
  *
  * 测试策略：
  * 1. 注册 → 拿 token → 存到 localStorage
@@ -69,7 +70,7 @@ test.beforeEach(async ({ page, context }) => {
   }, token);
 });
 
-test.describe("22 页面 e2e", () => {
+test.describe("25 页面 e2e", () => {
   for (const p of PAGES) {
     test(`${p.path} (${p.name}) 跳转 + 渲染`, async ({ page }) => {
       const errors: string[] = [];

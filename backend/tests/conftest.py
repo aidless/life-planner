@@ -1,5 +1,10 @@
-"""Pytest conftest - shared fixtures and path setup."""
+"""Pytest conftest - shared fixtures and path setup.
 
+P6: 测试库隔离 —— 在任何 app 导入之前把 DATABASE_URL 指向独立测试库，
+pytest 全程不再触碰正式库（之前跑一次留 35 测试号，封存前被迫清库）。
+"""
+
+import os
 import sys
 from pathlib import Path
 
@@ -9,6 +14,16 @@ import pytest
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
+
+# P6: 绝对路径独立测试库（*.db 已在 .gitignore，不进仓库）。
+# 必须在首次 `import app.*` 之前设置，因为 engine/settings 是模块级单例。
+# 用绝对路径：sqlite 相对路径随 cwd 解析（仓库根 vs backend/ 各有一个
+# life_planner.db，以前两种都被污染过）。
+# P6: 异步兼容式 URL（legacy database.py 用 create_async_engine，
+# 要求 +aiosqlite 驱动；同步侧各自 strip，见 app/database.py）。
+os.environ["DATABASE_URL"] = (
+    f"sqlite+aiosqlite:///{BACKEND_DIR / 'tests' / 'test_isolated.db'}"
+)
 
 
 def clear_rate_limiter() -> None:

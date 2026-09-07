@@ -3,6 +3,10 @@
 cron:
     0 8  * * * cd /data3/projects/life-planner/backend && venv/bin/python scripts/recommend_push.py --slot morning
     0 21 * * * cd /data3/projects/life-planner/backend && venv/bin/python scripts/recommend_push.py --slot evening
+    @reboot sleep 120 && cd /data3/projects/life-planner/backend && venv/bin/python scripts/recommend_push.py --slot morning
+    # P6: @reboot 兜底 —— 机器若在 08:00 宕机（如 2026-09-07 晨重启致当日
+    # morning 未触发），启动后补跑一次；save_run 按 (user,date,slot,rule)
+    # 去重，与 08:00 自然触发重复执行也安全。
 
 Manual:
     venv/bin/python scripts/recommend_push.py --slot manual [--user-id 123]

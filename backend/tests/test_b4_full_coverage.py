@@ -13,6 +13,16 @@ import random
 import requests
 import sys
 
+import pytest
+
+# P6: 活体测试 —— 走真实 HTTP 打 8001 服务器（他人运维资产）, 直接写正式库,
+# 不受 conftest DATABASE_URL 隔离约束。默认跳过, 显式 opt-in 才跑:
+#   LP_LIVE_TESTS=1 python -m pytest backend/tests/test_b4_full_coverage.py
+pytestmark = pytest.mark.skipif(
+    os.getenv("LP_LIVE_TESTS") != "1",
+    reason="活体测试默认跳过（写正式库）; 置 LP_LIVE_TESTS=1 显式运行",
+)
+
 BACKEND_URL = "http://localhost:8001"
 HTTP_TIMEOUT = 8
 

@@ -8,12 +8,16 @@ from app.config import get_settings
 
 settings = get_settings()
 
+# P6: 同步 engine 剥掉 +aiosqlite（legacy 侧 create_async_engine 要求异步式
+# URL，DATABASE_URL 因此统一为 sqlite+aiosqlite 形式；默认无后缀时为 no-op）。
+SYNC_DATABASE_URL = settings.DATABASE_URL.replace("+aiosqlite", "")
+
 connect_args = {}
-if "sqlite" in settings.DATABASE_URL:
+if "sqlite" in SYNC_DATABASE_URL:
     connect_args["check_same_thread"] = False
 
 engine = create_engine(
-    settings.DATABASE_URL,
+    SYNC_DATABASE_URL,
     connect_args=connect_args,
     echo=settings.DEBUG,
 )

@@ -1,7 +1,7 @@
 """P5 API tests — today/history/notifications + graceful no-LLM downgrade.
 
-Uses the real DB like other smoke tests; users are cleaned by the
-E2E gate (P3-3 users-zero rule).
+P6: conftest 把 DATABASE_URL 指到独立测试库, 本文件用户只进测试库,
+不再需要 E2E 门清零（P3-3 users-zero 规则只约束正式库）。
 """
 
 import uuid
