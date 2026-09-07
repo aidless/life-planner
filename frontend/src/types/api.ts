@@ -1,17 +1,19 @@
 /**
  * API Type Definitions
- * 
- * TypeScript type definitions for API requests and responses.
- * Follows the standard API response format: { code, data, message }
+ *
+ * 实际线上格式（P7-B2 锁定，后端 app/shared/envelope.py 为准）：
+ *   成功 { success: true, data }
+ *   失败 { success: false, error } 或 FastAPI HTTPException { detail }
+ * 注意：此前这里写 { code, data, message } 与实际不符，已按实际修正。
  */
 
 /**
  * Standard API Response Format
  */
 export interface ApiResponse<T = unknown> {
-  code: number;
+  success: boolean;
   data: T;
-  message: string;
+  error?: string | { code: string; message: string };
 }
 
 /**

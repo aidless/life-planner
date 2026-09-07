@@ -18,25 +18,8 @@ from app.config import get_settings
 from app.database import engine
 from app.shared.base_model import Base
 
-# Import models so Base.metadata knows about all tables
-from app.modules.auth.models import User  # noqa: F401
-from app.modules.life_planner.models import LifeGoal  # noqa: F401
-from app.modules.daily_tracker.models import DailyLog  # noqa: F401
-from app.modules.exam_analyzer.models import Exam, ExamQuestion  # noqa: F401
-from app.modules.health.models import HealthLog, ExerciseRecord  # noqa: F401
-from app.modules.finance.models import Transaction, Budget, FinancialGoal  # noqa: F401
-from app.modules.habits.models import Habit, HabitCheckin  # noqa: F401
-# W33: 8 个新子域的 models（确保 SQLAlchemy 知道表）
-from app.modules.psychology.models import MoodLog, Reflection  # noqa: F401
-from app.modules.family.models import FamilyMember, Interaction as FamilyInteraction  # noqa: F401
-from app.modules.interest.models import Interest, InterestActivity  # noqa: F401
-from app.modules.social.models import Contact, SocialInteraction  # noqa: F401
-from app.modules.learning.models import Book, Course  # noqa: F401
-from app.modules.travel.models import Trip, BucketList  # noqa: F401
-from app.modules.intimacy.models import Relationship, Anniversary  # noqa: F401
-from app.modules.meaning.models import Value, LifePurpose  # noqa: F401
-# P5: 推荐系统 models（recommendation_runs/notifications）
-from app.modules.recommend.models import RecommendationRun, Notification  # noqa: F401
+# P7-B0: models 不再这里手写 import —— loader.discover() 在 create_app 内
+# 按副作用导入各域 models（先于 create_all），与旧手工 import 等价。
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -99,57 +82,27 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         return response
 
 
-# Import routers
-from app.modules.auth.router import router as auth_router
-from app.modules.life_planner.router import router as life_planner_router
-from app.modules.daily_tracker.router import router as daily_tracker_router
-from app.modules.exam_analyzer.router import router as exam_analyzer_router
-from app.modules.ai_coach.router import router as ai_coach_router
-# W26: college 模块已重建 (W3 报告虚构的弥补)
-from app.modules.college.router import router as college_router
-# W32: 3 个 P0 子域（健康/财务/习惯）
-from app.modules.health.router import router as health_router
-from app.modules.finance.router import router as finance_router
-from app.modules.habits.router import router as habits_router
-# P5: 实时决策推荐系统（混合引擎）
-from app.modules.recommend.router import router as recommend_router
-# W38: career module (added fix B-α)
-from app.modules.career.router import router as career_router
-# W33: 8 个 P1+P2 子域（心理/家庭/兴趣/社交/学习/旅行/亲密/意义）
-from app.modules.psychology.router import router as psychology_router
-from app.modules.family.router import router as family_router
-from app.modules.interest.router import router as interest_router
-from app.modules.social.router import router as social_router
-from app.modules.learning.router import router as learning_router
-from app.modules.travel.router import router as travel_router
-from app.modules.intimacy.router import router as intimacy_router
-from app.modules.meaning.router import router as meaning_router
-# W35: dashboard 模块（聚合 12 维度）
-from app.modules.dashboard.router import router as dashboard_router
-# W31: import all models so SQLAlchemy create_all builds every table
-# (previously only college.models imported, leaving auth/daily_tracker/etc
-# tables missing — Bug 13)
-from app.modules.college.models import (  # noqa: F401
-    CollegeScore, CollegeInfo, ProvinceRank, CollegeRecommendation,
-)
-from app.modules.auth.models import User  # noqa: F401
-from app.modules.life_planner.models import LifeGoal  # noqa: F401
-from app.modules.daily_tracker.models import DailyLog  # noqa: F401
-from app.modules.exam_analyzer.models import Exam, ExamQuestion  # noqa: F401
-from app.modules.health.models import HealthLog, ExerciseRecord  # noqa: F401
-from app.modules.finance.models import Transaction, Budget, FinancialGoal  # noqa: F401
-from app.modules.habits.models import Habit, HabitCheckin  # noqa: F401
-# W33: 8 个新子域的 models（确保 SQLAlchemy 知道表）
-from app.modules.psychology.models import MoodLog, Reflection  # noqa: F401
-from app.modules.family.models import FamilyMember, Interaction as FamilyInteraction  # noqa: F401
-from app.modules.interest.models import Interest, InterestActivity  # noqa: F401
-from app.modules.social.models import Contact, SocialInteraction  # noqa: F401
-from app.modules.learning.models import Book, Course  # noqa: F401
-from app.modules.travel.models import Trip, BucketList  # noqa: F401
-from app.modules.intimacy.models import Relationship, Anniversary  # noqa: F401
-from app.modules.meaning.models import Value, LifePurpose  # noqa: F401
-# P5: 推荐系统 models（create_app 内同样注册，确保 create_all 建表）
-from app.modules.recommend.models import RecommendationRun, Notification  # noqa: F401
+class RequestIdMiddleware(BaseHTTPMiddleware):
+    """P7-B2: 可观测追踪 — 透传/生成 X-Request-ID，全响应携带。
+
+    加法变更：不碰业务包络（{success,data} 锁死，见 app/shared/envelope.py），
+    只加响应头，方便把前端报错和后端日志对上。
+    """
+
+    async def dispatch(self, request: Request, call_next):  # type: ignore[override]
+        import uuid
+
+        rid = request.headers.get("x-request-id") or uuid.uuid4().hex[:12]
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = rid
+        return response
+
+
+# P7-B0: 发现式加载（替代 20+ 手工 import + include_router）。
+# 每个域靠自家 manifest.py 自声明；删域 = 删目录，服务照常启动。
+# router 前缀清单见各 manifest；loader 干跑校验见 scripts/check_module_menu.py。
+from app.modules.loader import discover as _discover_modules
+from app.modules.loader import to_api_payload as _modules_payload
 
 settings = get_settings()
 
@@ -174,50 +127,31 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # Add rate limiting middleware (in-memory; use Redis in production)
+    # Add rate limiting middleware (in-memory; use Redis in production).
+    # 换 Redis 的触发阈值（P7-B2 明确化）：单实例 429 率连续 1 天 >1% 才换，
+    # 未到阈值不动——当前 e2e/生产从未触发。
     # W36: 调大到 5000 避免 e2e 测试触发（Playwright 23 测试 + 页面请求 ~200）
     app.add_middleware(RateLimitMiddleware, max_requests=5000, window_seconds=60)
+
+    # P7-B2: 请求追踪（加法，业务零改动）
+    app.add_middleware(RequestIdMiddleware)
 
     # W38: B4 Trust Boundary middleware (R2.2 case study)
     from app.middleware.trust_bd import TrustBoundaryMiddleware
     app.add_middleware(TrustBoundaryMiddleware)
     
-    # W26: college models use the legacy Base (from database.py),
-    # so we also create tables for it. Otherwise college tables are
-    # missing and college endpoints 500.
-    # P1-fix: Base 先建 —— auth.User(username) 的 users 表优先占位；
-    # Legacy 后建，重名的 users 表被 checkfirst 跳过（旧 models/user.py 无路由引用）。
+    # P7-B0: 发现式加载全部域（models 副作用导入先于 create_all，
+    # 等价于旧手工 import models；router 逐个挂载）。
+    # P1-fix 语义保留：Base 先建占 users 表，Legacy 后建、重名跳过。
     from database import Base as LegacyBase
+    _modules = _discover_modules()
     Base.metadata.create_all(bind=engine)
     LegacyBase.metadata.create_all(bind=engine)
 
-    # Register all routers
-    app.include_router(auth_router)
-    app.include_router(life_planner_router)
-    app.include_router(daily_tracker_router)
-    app.include_router(exam_analyzer_router)
-    app.include_router(ai_coach_router)
-    # W3: AI 推荐 - college_router 现在是真实 router (W26 重建)
-    if college_router is not None:
-        app.include_router(college_router)
-    # W32: 3 个 P0 子域
-    app.include_router(health_router)
-    app.include_router(finance_router)
-    app.include_router(habits_router)
-    # P5: 决策推荐
-    app.include_router(recommend_router)
-    # W38: career (added fix B-α — job applications)
-    app.include_router(career_router)
-    # W33: 8 个 P1+P2 子域
-    app.include_router(psychology_router)
-    app.include_router(family_router)
-    app.include_router(interest_router)
-    app.include_router(social_router)
-    app.include_router(learning_router)
-    app.include_router(travel_router)
-    app.include_router(intimacy_router)
-    app.include_router(meaning_router)
-    app.include_router(dashboard_router)
+    # Register all routers (discovered)
+    for _mod in _modules:
+        app.include_router(_mod.router)
+    app.state.modules = _modules
 
     @app.get("/api/health")
     def health_check() -> dict[str, Any]:
@@ -244,6 +178,13 @@ def create_app() -> FastAPI:
                 "tables": tables,
             },
         }
+
+    @app.get("/api/modules")
+    def list_modules(request: Request) -> dict[str, Any]:
+        """已加载业务域聚合（P7-B0 自声明 manifests）— 供前端菜单校验与管理面。"""
+        mods = getattr(request.app.state, "modules", None)
+        payload = _modules_payload(mods) if mods is not None else _modules_payload()
+        return {"success": True, "data": {"modules": payload, "count": len(payload)}}
 
     # P2-1: 同源 serving 前端 SPA（frontend/dist）。
     # 背景：vite proxy 只在 dev 生效，生产 serve(8080) 下 /api 相对路径 404，

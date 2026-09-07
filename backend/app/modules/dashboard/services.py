@@ -5,18 +5,39 @@ from typing import Any, Dict, List
 
 from sqlalchemy.orm import Session
 
-# Subdomain services
-from app.modules.health.services import calculate_health_score
-from app.modules.finance.services import get_stats as finance_stats
-from app.modules.habits.services import list_habits
-from app.modules.psychology.services import get_stats as psychology_stats
-from app.modules.family.services import list_members, get_upcoming_birthdays
-from app.modules.interest.services import list_interests, get_stats as interest_stats
-from app.modules.social.services import list_contacts, get_reconnect_suggestions
-from app.modules.learning.services import list_books, list_courses
-from app.modules.travel.services import list_trips, list_bucket
-from app.modules.intimacy.services import list_relationships, list_anniversaries
-from app.modules.meaning.services import list_values, get_current_purpose
+# Subdomain services — 可选依赖（P7-B0）：聚合域不得硬 import 被聚合域，
+# 否则删任一域都会拖死 dashboard（删域演练实证）。缺失时桩函数抛 ImportError，
+# 各调用点本就有 try/except，会自动降级为 score=0/跳过。
+import importlib as _importlib
+
+
+def _opt(modname: str, attr: str):  # type: ignore[no-untyped-def]
+    try:
+        return getattr(_importlib.import_module(modname), attr)
+    except (ImportError, AttributeError):
+        def _missing(*args: object, **kwargs: object) -> object:
+            raise ImportError(f"可选依赖缺失: {modname}.{attr}")
+        return _missing
+
+
+calculate_health_score = _opt("app.modules.health.services", "calculate_health_score")
+finance_stats = _opt("app.modules.finance.services", "get_stats")
+list_habits = _opt("app.modules.habits.services", "list_habits")
+psychology_stats = _opt("app.modules.psychology.services", "get_stats")
+list_members = _opt("app.modules.family.services", "list_members")
+get_upcoming_birthdays = _opt("app.modules.family.services", "get_upcoming_birthdays")
+list_interests = _opt("app.modules.interest.services", "list_interests")
+interest_stats = _opt("app.modules.interest.services", "get_stats")
+list_contacts = _opt("app.modules.social.services", "list_contacts")
+get_reconnect_suggestions = _opt("app.modules.social.services", "get_reconnect_suggestions")
+list_books = _opt("app.modules.learning.services", "list_books")
+list_courses = _opt("app.modules.learning.services", "list_courses")
+list_trips = _opt("app.modules.travel.services", "list_trips")
+list_bucket = _opt("app.modules.travel.services", "list_bucket")
+list_relationships = _opt("app.modules.intimacy.services", "list_relationships")
+list_anniversaries = _opt("app.modules.intimacy.services", "list_anniversaries")
+list_values = _opt("app.modules.meaning.services", "list_values")
+get_current_purpose = _opt("app.modules.meaning.services", "get_current_purpose")
 
 from app.modules.dashboard.schemas import (
     DashboardResponse,

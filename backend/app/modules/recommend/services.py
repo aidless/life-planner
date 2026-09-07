@@ -7,16 +7,35 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.modules.finance import services as finance_svc
-from app.modules.habits import services as habits_svc
-from app.modules.habits.models import HabitCheckin
-from app.modules.health import services as health_svc
-from app.modules.daily_tracker import services as daily_svc
+import importlib as _importlib
+from types import ModuleType as _ModuleType
+
+
+def _optmod(modname: str) -> Any:
+    """可选跨域依赖（P7-B0）：被引用的域被删除时返回桩模块，
+    任意属性访问抛 ImportError，由调用点 try/except 降级。"""
+    try:
+        return _importlib.import_module(modname)
+    except ImportError:
+        class _Stub(_ModuleType):
+            def __getattr__(self, attr: str) -> Any:
+                raise ImportError(f"可选依赖缺失: {modname}.{attr}")
+        return _Stub(modname)
+
+
+finance_svc = _optmod("app.modules.finance.services")
+habits_svc = _optmod("app.modules.habits.services")
+health_svc = _optmod("app.modules.health.services")
+daily_svc = _optmod("app.modules.daily_tracker.services")
 from app.modules.recommend.models import RecommendationRun, Notification
 from app.modules.recommend.rules import evaluate_snapshot
 
 
 def _last_checkin_date(db: Session, user_id: int, habit_id: int) -> str | None:
+    try:
+        from app.modules.habits.models import HabitCheckin
+    except ImportError:
+        return None  # habits 域已下线：无打卡日期
     stmt = (
         select(HabitCheckin.date)
         .where(HabitCheckin.user_id == user_id,
@@ -36,27 +55,54 @@ def collect_snapshot(db: Session, user_id: int,
     month = today[:7]
 
     habits = []
-    for h in habits_svc.list_habits(db, user_id):
-        habits.append({**h, "last_checkin_date": _last_checkin_date(db, user_id, h["id"])})
+    try:
+        for h in habits_svc.list_habits(db, user_id):
+            habits.append({**h, "last_checkin_date": _last_checkin_date(db, user_id, h["id"])})
+    except (ImportError, Exception):
+        habits = []
 
-    txs = finance_svc.list_transactions(db, user_id, month)
-    spent: dict[str, float] = {}
-    for t in txs:
-        if t.type == "expense":
-            spent[t.category] = spent.get(t.category, 0) + float(t.amount)
-    fin_stats = finance_svc.get_stats(db, user_id, month)
+    txs: list = []
+    fin_stats: dict = {}
     goals = []
-    for g in finance_svc.list_goals(db, user_id):
-        prog = (float(g.current_amount) / float(g.target_amount)
-                if g.target_amount else 1.0)
-        goals.append({"title": g.title, "progress": min(1.0, prog)})
+    try:
+        txs = finance_svc.list_transactions(db, user_id, month)
+        fin_stats = finance_svc.get_stats(db, user_id, month)
+        for g in finance_svc.list_goals(db, user_id):
+            prog = (float(g.current_amount) / float(g.target_amount)
+                    if g.target_amount else 1.0)
+            goals.append({"title": g.title, "progress": min(1.0, prog)})
+    except (ImportError, Exception):
+        txs, fin_stats, goals = [], {}, []
+    spent = {}
+    try:
+        for t in txs:
+            if t.type == "expense":
+                spent[t.category] = spent.get(t.category, 0) + float(t.amount)
+    except (ImportError, Exception):
+        pass
 
-    health_logs = health_svc.list_health_logs(db, user_id, 30)
-    h_stats = health_svc.get_stats(db, user_id, 30)
-    h_score = health_svc.calculate_health_score(db, user_id)
+    health_logs: list = []
+    h_stats: dict = {}
+    h_score: dict = {}
+    try:
+        health_logs = health_svc.list_health_logs(db, user_id, 30)
+        h_stats = health_svc.get_stats(db, user_id, 30)
+        h_score = health_svc.calculate_health_score(db, user_id)
+    except (ImportError, Exception):
+        pass
 
-    today_logs = daily_svc.get_logs(db, user_id,
-                                    target_date=date.fromisoformat(today))
+    today_logs: list = []
+    try:
+        today_logs = daily_svc.get_logs(db, user_id,
+                                        target_date=date.fromisoformat(today))
+    except (ImportError, Exception):
+        pass
+
+    try:
+        budgets = [{"category": b.category, "amount": float(b.amount)}
+                   for b in finance_svc.list_budgets(db, user_id, month)]
+    except (ImportError, Exception):
+        budgets = []
 
     return {
         "today": today,
@@ -64,8 +110,7 @@ def collect_snapshot(db: Session, user_id: int,
         "finance": {
             "income": float(fin_stats.get("income", 0)),
             "expense": float(fin_stats.get("expense", 0)),
-            "budgets": [{"category": b.category, "amount": float(b.amount)}
-                        for b in finance_svc.list_budgets(db, user_id, month)],
+            "budgets": budgets,
             "spent_by_category": spent,
             "goals": goals,
         },
