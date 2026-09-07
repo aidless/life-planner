@@ -179,9 +179,11 @@ def create_app() -> FastAPI:
     # W26: college models use the legacy Base (from database.py),
     # so we also create tables for it. Otherwise college tables are
     # missing and college endpoints 500.
+    # P1-fix: Base 先建 —— auth.User(username) 的 users 表优先占位；
+    # Legacy 后建，重名的 users 表被 checkfirst 跳过（旧 models/user.py 无路由引用）。
     from database import Base as LegacyBase
-    LegacyBase.metadata.create_all(bind=engine)
     Base.metadata.create_all(bind=engine)
+    LegacyBase.metadata.create_all(bind=engine)
 
     # Register all routers
     app.include_router(auth_router)
