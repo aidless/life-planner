@@ -40,6 +40,9 @@ const StudyPlannerPage = React.lazy(() => import('./pages/StudyPlanner'));
 const GradAdvisorPage = React.lazy(() => import('./pages/GradAdvisor'));
 const AICoachPage = React.lazy(() => import('./pages/AICoach'));
 const RecommendPage = React.lazy(() => import('./pages/Recommend'));
+const FinancePage = React.lazy(() => import('./pages/Finance'));
+const HabitsPage = React.lazy(() => import('./pages/Habits'));
+const HealthPage = React.lazy(() => import('./pages/Health'));
 
 const { Header, Content, Footer } = Layout;
 
@@ -105,6 +108,9 @@ function AppLayout() {
     { key: '/grad', label: <Link to="/grad">研究生</Link> },
     { key: '/ai', label: <Link to="/ai">AI 教练</Link> },
     { key: '/recommend', label: <Link to="/recommend">智能推荐</Link> },
+    { key: '/finance', label: <Link to="/finance">财务</Link> },
+    { key: '/habits', label: <Link to="/habits">习惯</Link> },
+    { key: '/health', label: <Link to="/health">健康</Link> },
     { key: '/psychology', label: <Link to="/psychology">心理</Link> },
     { key: '/family', label: <Link to="/family">家庭</Link> },
     { key: '/interest', label: <Link to="/interest">兴趣</Link> },
@@ -182,6 +188,9 @@ function AppLayout() {
             <Route path="/grad" element={<RequireAuth><GradAdvisorPage /></RequireAuth>} />
             <Route path="/ai" element={<RequireAuth><AICoachPage /></RequireAuth>} />
             <Route path="/recommend" element={<RequireAuth><RecommendPage /></RequireAuth>} />
+            <Route path="/finance" element={<RequireAuth><FinancePage /></RequireAuth>} />
+            <Route path="/habits" element={<RequireAuth><HabitsPage /></RequireAuth>} />
+            <Route path="/health" element={<RequireAuth><HealthPage /></RequireAuth>} />
 
             {/* 高考志愿 — 4 个路由 */}
             <Route path="/scores" element={<RequireAuth><ScoreQueryPage /></RequireAuth>} />
