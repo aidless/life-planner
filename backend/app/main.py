@@ -35,6 +35,8 @@ from app.modules.learning.models import Book, Course  # noqa: F401
 from app.modules.travel.models import Trip, BucketList  # noqa: F401
 from app.modules.intimacy.models import Relationship, Anniversary  # noqa: F401
 from app.modules.meaning.models import Value, LifePurpose  # noqa: F401
+# P5: 推荐系统 models（recommendation_runs/notifications）
+from app.modules.recommend.models import RecommendationRun, Notification  # noqa: F401
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -109,6 +111,8 @@ from app.modules.college.router import router as college_router
 from app.modules.health.router import router as health_router
 from app.modules.finance.router import router as finance_router
 from app.modules.habits.router import router as habits_router
+# P5: 实时决策推荐系统（混合引擎）
+from app.modules.recommend.router import router as recommend_router
 # W38: career module (added fix B-α)
 from app.modules.career.router import router as career_router
 # W33: 8 个 P1+P2 子域（心理/家庭/兴趣/社交/学习/旅行/亲密/意义）
@@ -144,6 +148,8 @@ from app.modules.learning.models import Book, Course  # noqa: F401
 from app.modules.travel.models import Trip, BucketList  # noqa: F401
 from app.modules.intimacy.models import Relationship, Anniversary  # noqa: F401
 from app.modules.meaning.models import Value, LifePurpose  # noqa: F401
+# P5: 推荐系统 models（create_app 内同样注册，确保 create_all 建表）
+from app.modules.recommend.models import RecommendationRun, Notification  # noqa: F401
 
 settings = get_settings()
 
@@ -198,6 +204,8 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(finance_router)
     app.include_router(habits_router)
+    # P5: 决策推荐
+    app.include_router(recommend_router)
     # W38: career (added fix B-α — job applications)
     app.include_router(career_router)
     # W33: 8 个 P1+P2 子域

@@ -21,6 +21,7 @@ const PAGES = [
   { path: "/career", name: "职业发展", selector: "h3" },
   { path: "/grad", name: "研究生", selector: "h3" },
   { path: "/ai", name: "AI 教练", selector: "h3" },
+  { path: "/recommend", name: "智能推荐", selector: "h3" },
   { path: "/psychology", name: "心理", selector: "h3" },
   { path: "/family", name: "家庭", selector: "h3" },
   { path: "/interest", name: "兴趣", selector: "h3" },

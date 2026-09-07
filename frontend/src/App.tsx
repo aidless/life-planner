@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MenuOutlined, BulbOutlined, BulbFilled } from '@ant-design/icons';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import NotifBell from '@/components/NotifBell';
 import SuspenseLoading from '@/components/SuspenseLoading';
 import NotFound from '@/components/NotFound';
 import { useTheme } from '@/hooks/useTheme';
@@ -38,6 +39,7 @@ const CareerAdvisorPage = React.lazy(() => import('./pages/CareerAdvisor'));
 const StudyPlannerPage = React.lazy(() => import('./pages/StudyPlanner'));
 const GradAdvisorPage = React.lazy(() => import('./pages/GradAdvisor'));
 const AICoachPage = React.lazy(() => import('./pages/AICoach'));
+const RecommendPage = React.lazy(() => import('./pages/Recommend'));
 
 const { Header, Content, Footer } = Layout;
 
@@ -102,6 +104,7 @@ function AppLayout() {
     { key: '/career', label: <Link to="/career">职业发展</Link> },
     { key: '/grad', label: <Link to="/grad">研究生</Link> },
     { key: '/ai', label: <Link to="/ai">AI 教练</Link> },
+    { key: '/recommend', label: <Link to="/recommend">智能推荐</Link> },
     { key: '/psychology', label: <Link to="/psychology">心理</Link> },
     { key: '/family', label: <Link to="/family">家庭</Link> },
     { key: '/interest', label: <Link to="/interest">兴趣</Link> },
@@ -127,6 +130,7 @@ function AppLayout() {
           人生规划系统
         </Typography.Title>
         <ThemeToggleButton />
+        <NotifBell />
         {!isMobile && (
           <Menu
             theme="dark"
@@ -177,6 +181,7 @@ function AppLayout() {
             <Route path="/career" element={<RequireAuth><CareerAdvisorPage /></RequireAuth>} />
             <Route path="/grad" element={<RequireAuth><GradAdvisorPage /></RequireAuth>} />
             <Route path="/ai" element={<RequireAuth><AICoachPage /></RequireAuth>} />
+            <Route path="/recommend" element={<RequireAuth><RecommendPage /></RequireAuth>} />
 
             {/* 高考志愿 — 4 个路由 */}
             <Route path="/scores" element={<RequireAuth><ScoreQueryPage /></RequireAuth>} />
