@@ -76,7 +76,7 @@ export default function CollegeAdvisor() {
     }
   };
 
-  // 适配两种数据格式（mock fallback + 真后端）
+  // 适配后端字段（dash/steady/safe；兼容 college_name/min_score 等别名）
   const normalize = (c: RecommendItem) => ({
     id: c.id ?? 0,
     name: c.college_name || c.name || "未知",

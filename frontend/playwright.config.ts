@@ -16,7 +16,7 @@ export default defineConfig({
   workers: 2,
   reporter: process.env.CI ? "github" : "list",
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: process.env.E2E_BASE_URL ?? "http://localhost:5173",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     // 使用系统 Chrome（避免 chromium 下载失败）

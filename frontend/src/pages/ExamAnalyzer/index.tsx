@@ -88,7 +88,7 @@ export default function ExamAnalyzer() {
     try {
       const res = await apiClient.post<any>(`/exams/${examId}/analyze`);
       const analysis = res.data?.data?.analysis;
-      // 把真后端结果 + 派生 mock 字段合并到 UI 模型
+      // 把真后端结果合并到 UI 模型（缺字段时给空值兜底）
       setDiagnosis({
         exam_id: examId,
         subject,

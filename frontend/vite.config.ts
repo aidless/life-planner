@@ -24,17 +24,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('scheduler')) return 'react-vendor';
-            if (id.includes('antd') || id.includes('@ant-design')) return 'antd-vendor';
-            if (id.includes('axios') || id.includes('zustand')) return 'lib-vendor';
-            return 'misc-vendor';
-          }
-        },
-      },
-    },
+    // 注：曾用自定义 manualChunks 按 react/antd 切分 vendor，
+    // 但 rollup 跨 chunk 的 react 命名空间导出错位（antd-vendor 拿到 undefined.createContext），
+    // 生产包全页报错。改回默认分包（正确性优先于 chunk 体积）。
+    chunkSizeWarningLimit: 1500,
   },
 })

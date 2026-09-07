@@ -237,6 +237,33 @@ def create_app() -> FastAPI:
             },
         }
 
+    # P2-1: 同源 serving 前端 SPA（frontend/dist）。
+    # 背景：vite proxy 只在 dev 生效，生产 serve(8080) 下 /api 相对路径 404，
+    # 所有页面调数失败。改由后端 8001 同源托管 dist，/api 直通，无需代理/CORS。
+    from pathlib import Path  # noqa: PLC0415
+    _DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+    if _DIST.is_dir():
+        from fastapi.responses import FileResponse  # noqa: PLC0415
+        from fastapi.staticfiles import StaticFiles  # noqa: PLC0415
+
+        _assets = _DIST / "assets"
+        if _assets.is_dir():
+            app.mount("/assets", StaticFiles(directory=str(_assets)), name="spa-assets")
+
+        @app.get("/", include_in_schema=False)
+        def spa_root() -> FileResponse:
+            return FileResponse(str(_DIST / "index.html"))
+
+        @app.get("/{full_path:path}", include_in_schema=False)
+        def spa_fallback(full_path: str) -> FileResponse:
+            from fastapi import HTTPException  # noqa: PLC0415
+            if full_path.startswith("api/"):
+                raise HTTPException(status_code=404, detail="Not Found")
+            fp = _DIST / full_path
+            if fp.is_file():
+                return FileResponse(str(fp))
+            return FileResponse(str(_DIST / "index.html"))
+
     return app
 
 

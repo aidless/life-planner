@@ -43,7 +43,7 @@ test.beforeEach(async ({ page, context }) => {
   let lastErr;
   for (let i = 0; i < 3; i++) {
     try {
-      resp = await page.request.post("http://localhost:8001/api/auth/register", {
+      resp = await page.request.post(`${process.env.E2E_API ?? "http://localhost:8001"}/api/auth/register`, {
         data: { username: u, email, password: "Test123456" },
         timeout: 10000,
       });
