@@ -15,7 +15,8 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://localhost:8001',
+        // P2-2: e2e 隔离允许经 E2E_API_PROXY 改写代理目标；缺省仍指 8001 生产后端。
+        target: process.env.E2E_API_PROXY ?? 'http://localhost:8001',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/api'),
       },
