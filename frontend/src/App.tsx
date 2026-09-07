@@ -9,6 +9,7 @@ import NotifBell from '@/components/NotifBell';
 import SuspenseLoading from '@/components/SuspenseLoading';
 import NotFound from '@/components/NotFound';
 import { useTheme } from '@/hooks/useTheme';
+import { useModules } from '@/hooks/useModules';
 
 // Pages (lazy loaded)
 const DashboardPage = React.lazy(() => import('./pages/Dashboard'));
@@ -95,31 +96,10 @@ function AppLayout() {
   };
   const selectedKey = computeSelected(path);
 
-  // 菜单项（统一一处）
-  const menuItems = [
-    { key: '/dashboard', label: <Link to="/dashboard">仪表盘</Link> },
-    { key: '/daily', label: <Link to="/daily">日常记录</Link> },
-    { key: '/exams', label: <Link to="/exams">考试分析</Link> },
-    { key: '/goals', label: <Link to="/goals">人生目标</Link> },
-    { key: '/study', label: <Link to="/study">学习规划</Link> },
-    { key: '/subject-selection', label: <Link to="/subject-selection">选科</Link> },
-    { key: '/college', label: <Link to="/college">高考志愿</Link> },
-    { key: '/career', label: <Link to="/career">职业发展</Link> },
-    { key: '/grad', label: <Link to="/grad">研究生</Link> },
-    { key: '/ai', label: <Link to="/ai">AI 教练</Link> },
-    { key: '/recommend', label: <Link to="/recommend">智能推荐</Link> },
-    { key: '/finance', label: <Link to="/finance">财务</Link> },
-    { key: '/habits', label: <Link to="/habits">习惯</Link> },
-    { key: '/health', label: <Link to="/health">健康</Link> },
-    { key: '/psychology', label: <Link to="/psychology">心理</Link> },
-    { key: '/family', label: <Link to="/family">家庭</Link> },
-    { key: '/interest', label: <Link to="/interest">兴趣</Link> },
-    { key: '/social', label: <Link to="/social">社交</Link> },
-    { key: '/learning', label: <Link to="/learning">学习</Link> },
-    { key: '/travel', label: <Link to="/travel">旅行</Link> },
-    { key: '/intimacy', label: <Link to="/intimacy">亲密</Link> },
-    { key: '/meaning', label: <Link to="/meaning">意义</Link> },
-  ];
+  // 菜单项（P7-B3：数据源为后端 /api/modules 自声明聚合，
+  // 首屏与降级用 config/modules.ts 静态镜像——与旧硬编码逐项一致。
+  // 静态 <Route> 保留：未知/被删域的 path 不进菜单但深链仍可达。）
+  const { menuItems } = useModules();
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -144,8 +124,8 @@ function AppLayout() {
             selectedKeys={[selectedKey]}
             style={{ background: 'transparent', flex: 1, borderBottom: 'none', minWidth: 0, flexWrap: 'wrap' }}
             items={menuItems.map((m) => ({
-              ...m,
-              label: <span style={{ color: 'white' }}>{m.label}</span>,
+              key: m.key,
+              label: <Link to={m.key}><span style={{ color: 'white' }}>{m.label}</span></Link>,
             }))}
           />
         )}
@@ -163,7 +143,7 @@ function AppLayout() {
           mode="inline"
           selectedKeys={[selectedKey]}
           items={menuItems.map((m) => ({
-            ...m,
+            key: m.key,
             label: <Link to={m.key}>{m.label}</Link>,
           }))}
         />
