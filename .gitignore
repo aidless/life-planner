@@ -45,3 +45,7 @@ dist/
 
 # Large binaries (playwright)
 frontend/node_modules/playwright-core/.local-browsers/
+# Runtime logs (stdout/stderr) — evidence archives live under evidence/
+*.err
+*.out
+*.logfile
