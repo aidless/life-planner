@@ -1,8 +1,10 @@
 import { Card, Typography, Input, Button, Form, Select } from "antd";
 import { useState } from "react";
+import { SolutionOutlined } from "@ant-design/icons";
 import apiClient from "@/api/client";
+import PageHeader from "@/components/PageHeader";
 
-const { Title, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 export default function CareerAdvisor() {
   const [result, setResult] = useState("");
@@ -22,9 +24,12 @@ export default function CareerAdvisor() {
   };
 
   return (
-    <div>
-      <Title level={3}>职业发展</Title>
-      <Paragraph type="secondary">从实习到求职，AI 帮你规划职业道路</Paragraph>
+    <div className="lp-page" style={{ maxWidth: 700 }}>
+      <PageHeader
+        icon={<SolutionOutlined />}
+        title="职业发展"
+        subtitle="从实习到求职，AI 帮你规划职业道路"
+      />
       <Card style={{ maxWidth: 700 }}>
         <Form layout="vertical" onFinish={handleAnalyze}>
           <Form.Item name="stage" label="当前阶段">

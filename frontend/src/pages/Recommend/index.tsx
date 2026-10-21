@@ -13,8 +13,9 @@ import {
 import { BulbOutlined, BellOutlined, HistoryOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import apiClient from "@/api/client";
+import PageHeader from "@/components/PageHeader";
 
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 
 interface RecItem {
   rule: string;
@@ -90,26 +91,23 @@ export default function Recommend() {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 1200, margin: "0 auto" }}>
-      <Title level={3} style={{ margin: 0 }}>
-        <BulbOutlined style={{ color: "#fa8c16", marginRight: 12 }} />
-        智能推荐 · 今日决策
-        {unread > 0 && <Badge count={unread} style={{ marginLeft: 12 }} />}
-      </Title>
-      <Text type="secondary">
-        按你的最新数据即时计算 {coachMode === "llm" ? "· 教练点评由 AI 生成" : "· 当前为规则模式（未配 AI 密钥）"}
-      </Text>
-      <div style={{ marginBottom: 24 }} />
+    <div className="lp-page">
+      <PageHeader
+        icon={<BulbOutlined />}
+        title="智能推荐 · 今日决策"
+        subtitle={`按你的最新数据即时计算 ${coachMode === "llm" ? "· 教练点评由 AI 生成" : "· 当前为规则模式（未配 AI 密钥）"}`}
+        extra={unread > 0 ? <Badge count={unread} /> : undefined}
+      />
 
       {coachNote && (
-        <Card title="🎙️ 教练一句话" style={{ marginBottom: 24 }}>
+        <Card title="教练一句话" style={{ marginBottom: 24 }}>
           <Paragraph style={{ fontSize: 16, margin: 0 }}>{coachNote}</Paragraph>
         </Card>
       )}
 
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={14}>
-          <Card title={`📋 今日推荐（${items.length}）`} loading={loading}>
+          <Card title={`今日推荐（${items.length}）`} loading={loading}>
             {items.length === 0 ? (
               <Text type="secondary">暂无推荐</Text>
             ) : (

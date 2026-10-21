@@ -6,15 +6,15 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![React 18](https://img.shields.io/badge/react-18-61dafb.svg)](https://react.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Tests: 60/60](https://img.shields.io/badge/tests-60%2F60-brightgreen.svg)](#测试)
-[![mypy: 0 errors](https://img.shields.io/badge/mypy-0%20errors-blue.svg)](./pyproject.toml)
+[![Tests: 82](https://img.shields.io/badge/tests-82-brightgreen.svg)](#测试)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 ## 核心特性
 
-- **6 大核心模块**：仪表盘 / 日常记录 / 考试分析 / 人生目标 / 学习规划 / 高考志愿 / 职业发展 / 研究生规划 / AI 教练对话
-- **94+ API 端点**：覆盖学业+职业全流程
-- **AI 加持**：可选 Claude API 集成，提供智能分析与建议
-- **完整测试**：60 个自动化测试，my py 严格类型检查 0 错误
+- **9 大模块**：仪表盘 / 日常记录 / 考试分析 / 人生目标 / 高考志愿 / 职业发展 / AI 教练 / 智能推荐 / 身份认证
+- **33 个 API 端点**：覆盖学业+职业全流程
+- **AI 加持**：可选 Claude API 集成，无 key 时自动降级为本地确定性统计 + 模板反馈
+- **完整测试**：82 个自动化测试（pytest）+ 18 个活体测试默认 skip
 - **开箱即用**：Docker Compose 一键启动
 
 ## 快速开始
@@ -63,10 +63,12 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 | 考试分析 (ExamAnalyzer) | 5 | 上传试卷 + AI 错题诊断 |
 | 人生目标 (LifePlanner) | 5 | 长期目标 + 进度追踪 |
 | 职业发展 (Career) | — | 简历 + 求职规划（建设中）|
-| 研究生规划 (Grad) | — | 考研目标 + 倒计时（建设中）|
-| AI 教练 (AICoach) | 1 | Claude 对话 |
+| AI 教练 (AICoach) | 3 | 对话 / 分析 / 模块列表 |
+| 智能推荐 (Recommend) | 3 | 规则引擎冲稳保推荐 |
 
-总计：34 路由。
+总计：33 个 API 路径（9 个业务域）。
+
+> **立意收缩（2026-09）**：愿景层 11 域（财务/习惯/健康/心理/家庭/兴趣/社交/学习/旅行/亲密/意义）与研究生规划已软归档（代码在 `backend/app/modules_archive/` 与 `frontend/src/pages_archive/`，可回滚）。当前聚焦 4 场景 + AI + 数据积累两根承重柱。
 
 ## 技术栈
 
@@ -98,7 +100,7 @@ life-planner/
 │   └── requirements.txt
 ├── frontend/                # React 前端
 │   ├── src/
-│   │   ├── pages/           # 14 个页面
+│   │   ├── pages/           # 13 个业务页面（+ 登录/注册）
 │   │   ├── components/      # 共享组件
 │   │   ├── store/           # Zustand 状态
 │   │   ├── api/             # Axios 客户端
@@ -127,23 +129,25 @@ life-planner/
 
 ```bash
 cd backend
-$PY -m pytest tests/ -v     # 60 个测试，5 秒跑完
+$PY -m pytest tests/ -v     # 82 个测试，6 秒跑完
 ```
 
-**当前状态**：60/60 通过 + 3 次连跑稳定 + mypy 0 errors in 111 source files。
+**当前状态**：82 通过 + 18 活体 skip，3 次连跑稳定。
+
+**数据积累现状**（`scripts/import_json_scores.py` 实测入库，幂等可复算）：`college_scores` 50,865 行、`province_ranks` 550 行（山东 2025 一分一段），覆盖山东 2024/2025 + 广东 2024/2025。
 
 ## 文档
 
 - [docs/getting-started.md](./docs/getting-started.md) — 详细安装步骤
 - [docs/architecture.md](./docs/architecture.md) — 架构设计 + 数据库
-- [docs/api.md](./docs/api.md) — 34 端点参考
+- [docs/api.md](./docs/api.md) — 33 端点参考
 - [docs/deployment.md](./docs/deployment.md) — 部署到阿里云 ECS / Vercel
 
 ## 路线图
 
-- **v0.9（当前）**：6 核心模块 MVP 完成
-- **v1.0（2026 Q4）**：补 C/D（健康/财务/习惯/心理/家庭/兴趣/社交/学习 8 子域）
-- **v2.0（2027）**：移动端 + 国际化
+- **v0.9（当前）**：立意收缩——聚焦 4 场景 + AI 规则降级 + 数据入库（分数线 50,865 + 位次 550）
+- **v1.0（2026 Q4）**：AI 深度分析（接 Claude）+ 「越用越准」长期数据积累闭环
+- **v2.0（2027）**：移动端 + 国际化；愿景层域（健康/财务/习惯等）按需回滚启用
 
 ## 贡献
 

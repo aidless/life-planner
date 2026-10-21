@@ -20,16 +20,6 @@ const CollegeDetailPage = React.lazy(() => import('./pages/CollegeDetail'));
 const ScoreQueryPage = React.lazy(() => import('./pages/ScoreQuery'));
 const PredictPage = React.lazy(() => import('./pages/PredictPage'));
 
-// 12 维度子页面
-const PsychologyPage = React.lazy(() => import('./pages/Psychology'));
-const FamilyPage = React.lazy(() => import('./pages/Family'));
-const InterestPage = React.lazy(() => import('./pages/Interest'));
-const SocialPage = React.lazy(() => import('./pages/Social'));
-const LearningPage = React.lazy(() => import('./pages/Learning'));
-const TravelPage = React.lazy(() => import('./pages/Travel'));
-const IntimacyPage = React.lazy(() => import('./pages/Intimacy'));
-const MeaningPage = React.lazy(() => import('./pages/Meaning'));
-
 // 8 个核心学业子页面（W36 修复：之前未路由）
 const DailyTrackerPage = React.lazy(() => import('./pages/DailyTracker'));
 const ExamAnalyzerPage = React.lazy(() => import('./pages/ExamAnalyzer'));
@@ -38,12 +28,8 @@ const CollegeAdvisorPage = React.lazy(() => import('./pages/CollegeAdvisor'));
 const SubjectSelectionPage = React.lazy(() => import('./pages/SubjectSelection'));
 const CareerAdvisorPage = React.lazy(() => import('./pages/CareerAdvisor'));
 const StudyPlannerPage = React.lazy(() => import('./pages/StudyPlanner'));
-const GradAdvisorPage = React.lazy(() => import('./pages/GradAdvisor'));
 const AICoachPage = React.lazy(() => import('./pages/AICoach'));
 const RecommendPage = React.lazy(() => import('./pages/Recommend'));
-const FinancePage = React.lazy(() => import('./pages/Finance'));
-const HabitsPage = React.lazy(() => import('./pages/Habits'));
-const HealthPage = React.lazy(() => import('./pages/Health'));
 
 const { Header, Content, Footer } = Layout;
 
@@ -165,28 +151,14 @@ function AppLayout() {
             <Route path="/subject-selection" element={<RequireAuth><SubjectSelectionPage /></RequireAuth>} />
             <Route path="/college" element={<RequireAuth><CollegeAdvisorPage /></RequireAuth>} />
             <Route path="/career" element={<RequireAuth><CareerAdvisorPage /></RequireAuth>} />
-            <Route path="/grad" element={<RequireAuth><GradAdvisorPage /></RequireAuth>} />
             <Route path="/ai" element={<RequireAuth><AICoachPage /></RequireAuth>} />
             <Route path="/recommend" element={<RequireAuth><RecommendPage /></RequireAuth>} />
-            <Route path="/finance" element={<RequireAuth><FinancePage /></RequireAuth>} />
-            <Route path="/habits" element={<RequireAuth><HabitsPage /></RequireAuth>} />
-            <Route path="/health" element={<RequireAuth><HealthPage /></RequireAuth>} />
 
             {/* 高考志愿 — 4 个路由 */}
             <Route path="/scores" element={<RequireAuth><ScoreQueryPage /></RequireAuth>} />
             <Route path="/predict" element={<RequireAuth><PredictPage /></RequireAuth>} />
             <Route path="/colleges" element={<RequireAuth><CollegeListPage /></RequireAuth>} />
             <Route path="/colleges/:id" element={<RequireAuth><CollegeDetailPage /></RequireAuth>} />
-
-            {/* 12 维度子页面 */}
-            <Route path="/psychology" element={<RequireAuth><PsychologyPage /></RequireAuth>} />
-            <Route path="/family" element={<RequireAuth><FamilyPage /></RequireAuth>} />
-            <Route path="/interest" element={<RequireAuth><InterestPage /></RequireAuth>} />
-            <Route path="/social" element={<RequireAuth><SocialPage /></RequireAuth>} />
-            <Route path="/learning" element={<RequireAuth><LearningPage /></RequireAuth>} />
-            <Route path="/travel" element={<RequireAuth><TravelPage /></RequireAuth>} />
-            <Route path="/intimacy" element={<RequireAuth><IntimacyPage /></RequireAuth>} />
-            <Route path="/meaning" element={<RequireAuth><MeaningPage /></RequireAuth>} />
 
             {/* 兜底 */}
             <Route path="/" element={<Navigate to="/login" replace />} />

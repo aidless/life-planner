@@ -16,7 +16,6 @@ import AICoach from "@/pages/AICoach";
 import CollegeAdvisor from "@/pages/CollegeAdvisor";
 import CareerAdvisor from "@/pages/CareerAdvisor";
 import StudyPlanner from "@/pages/StudyPlanner";
-import GradAdvisor from "@/pages/GradAdvisor";
 
 const { Header, Sider, Content } = Layout;
 
@@ -28,7 +27,6 @@ const menuItems = [
   { key: "/study", icon: <BookOutlined />, label: "学习规划" },
   { key: "/college", icon: <BankOutlined />, label: "高考志愿" },
   { key: "/career", icon: <CompassOutlined />, label: "职业发展" },
-  { key: "/grad", icon: <ExperimentOutlined />, label: "研究生" },
   { key: "/ai", icon: <RobotOutlined />, label: "AI 教练" },
 ];
 
@@ -104,7 +102,6 @@ export default function AppLayout() {
             <Route path="/study" element={<StudyPlanner />} />
             <Route path="/college" element={<CollegeAdvisor />} />
             <Route path="/career" element={<CareerAdvisor />} />
-            <Route path="/grad" element={<GradAdvisor />} />
             <Route path="/ai" element={<AICoach />} />
           </Routes>
         </Content>

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Typography, Card, Form, Input, Select, Button, Tag, Result, Spin, message } from "antd";
+import { Typography, Card, Form, Input, Select, Button, Tag, Spin, message } from "antd";
 import { ArrowLeftOutlined, SolutionOutlined, BankOutlined } from "@ant-design/icons";
 import apiClient from "@/api/client";
+import PageHeader from "@/components/PageHeader";
 
-const { Paragraph, Text } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 
 const provinces = [
@@ -127,25 +128,27 @@ export default function CollegeAdvisor() {
 
   if (result) {
     return (
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: 24 }}>
+      <div className="lp-page" style={{ maxWidth: 1000 }}>
         {contextHolder}
-        <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => setResult(null)} style={{ marginBottom: 16, paddingLeft: 0 }}>
-          重新填报
-        </Button>
-        <Result
+        <PageHeader
           icon={<SolutionOutlined style={{ color: "#1677ff" }} />}
-          title="🎓 志愿填报推荐报告"
-          subTitle={result.summary}
+          title="志愿填报推荐报告"
+          subtitle={result.summary}
+          extra={
+            <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => setResult(null)}>
+              重新填报
+            </Button>
+          }
         />
-        <Card title="🚀 冲刺档（建议 1-2 所）" style={{ marginBottom: 24, borderRadius: 12, borderColor: "#ff4d4f" }}>
+        <Card title="冲刺档（建议 1-2 所）" style={{ marginBottom: 24, borderRadius: 12, borderColor: "#ff4d4f" }}>
           {result.reach.length === 0 ? <Text type="secondary">暂无冲刺推荐</Text>
             : result.reach.map((c, i) => renderCollegeCard(c, i, "#ff4d4f"))}
         </Card>
-        <Card title="🎯 稳妥档（建议 3-4 所）" style={{ marginBottom: 24, borderRadius: 12, borderColor: "#faad14" }}>
+        <Card title="稳妥档（建议 3-4 所）" style={{ marginBottom: 24, borderRadius: 12, borderColor: "#faad14" }}>
           {result.match.length === 0 ? <Text type="secondary">暂无稳妥推荐</Text>
             : result.match.map((c, i) => renderCollegeCard(c, i, "#faad14"))}
         </Card>
-        <Card title="🛡️ 保底档（建议 2-3 所）" style={{ marginBottom: 24, borderRadius: 12, borderColor: "#52c41a" }}>
+        <Card title="保底档（建议 2-3 所）" style={{ marginBottom: 24, borderRadius: 12, borderColor: "#52c41a" }}>
           {result.safe.length === 0 ? <Text type="secondary">暂无保底推荐</Text>
             : result.safe.map((c, i) => renderCollegeCard(c, i, "#52c41a"))}
         </Card>
@@ -158,15 +161,19 @@ export default function CollegeAdvisor() {
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: 24 }}>
+    <div className="lp-page" style={{ maxWidth: 600 }}>
       {contextHolder}
-      <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/dashboard")} style={{ marginBottom: 16, paddingLeft: 0 }}>
-        返回首页
-      </Button>
-      <Card title={<span><BankOutlined /> 志愿填报</span>} style={{ borderRadius: 12 }}>
-        <Paragraph type="secondary" style={{ marginBottom: 24 }}>
-          输入你的高考分数、省份和选科组合，AI 将基于真实大学数据为你推荐冲刺、稳妥、保底三档院校。
-        </Paragraph>
+      <PageHeader
+        icon={<BankOutlined />}
+        title="志愿填报"
+        subtitle="输入你的高考分数、省份和选科组合，AI 将基于真实大学数据为你推荐冲刺、稳妥、保底三档院校"
+        extra={
+          <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/dashboard")}>
+            返回首页
+          </Button>
+        }
+      />
+      <Card style={{ borderRadius: 12 }}>
         <Spin spinning={loading} tip="AI 推荐中...">
           <Form form={form} layout="vertical" onFinish={handleSubmit}>
             <Form.Item name="score" label="高考分数" rules={[{ required: true, message: "请输入分数" }]}>

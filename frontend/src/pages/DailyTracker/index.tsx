@@ -3,13 +3,12 @@ import {
   Card, Table, Button, Modal, Form, Input, Select, InputNumber,
   DatePicker, Tag, Typography, message, Space, Alert, Descriptions,
 } from "antd";
-import { PlusOutlined, RobotOutlined, DeleteOutlined } from "@ant-design/icons";
+import { PlusOutlined, RobotOutlined, DeleteOutlined, CalendarOutlined } from "@ant-design/icons";
 import apiClient from "@/api/client";
+import PageHeader from "@/components/PageHeader";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import type { DailyLog } from "@/types";
 import dayjs from "dayjs";
-
-const { Title } = Typography;
 
 const activityTypes = [
   { label: "学习", value: "study" },
@@ -102,11 +101,13 @@ export default function DailyTracker() {
   ];
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <Title level={3}>日常记录</Title>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>添加记录</Button>
-      </div>
+    <div className="lp-page">
+      <PageHeader
+        icon={<CalendarOutlined />}
+        title="日常记录"
+        subtitle="记录每天的活动、时长与状态，支持 AI 点评"
+        extra={<Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>添加记录</Button>}
+      />
       {error && (
         <Alert
           type="error"

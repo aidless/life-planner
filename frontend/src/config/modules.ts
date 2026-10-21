@@ -33,17 +33,6 @@ export const FALLBACK_MODULE_MENU: ModuleMenuItem[] = [
   { name: "career", title: "职业发展", path: "/career", menu: "职业发展" },
   { name: "ai_coach", title: "AI 教练", path: "/ai", menu: "AI 教练" },
   { name: "recommend", title: "智能推荐", path: "/recommend", menu: "智能推荐" },
-  { name: "finance", title: "财务", path: "/finance", menu: "财务" },
-  { name: "habits", title: "习惯", path: "/habits", menu: "习惯" },
-  { name: "health", title: "健康", path: "/health", menu: "健康" },
-  { name: "psychology", title: "心理", path: "/psychology", menu: "心理" },
-  { name: "family", title: "家庭", path: "/family", menu: "家庭" },
-  { name: "interest", title: "兴趣", path: "/interest", menu: "兴趣" },
-  { name: "social", title: "社交", path: "/social", menu: "社交" },
-  { name: "learning", title: "学习", path: "/learning", menu: "学习" },
-  { name: "travel", title: "旅行", path: "/travel", menu: "旅行" },
-  { name: "intimacy", title: "亲密", path: "/intimacy", menu: "亲密" },
-  { name: "meaning", title: "意义", path: "/meaning", menu: "意义" },
 ];
 
 /** path → 条目索引，供 live 排序与合法性过滤。 */
@@ -67,5 +56,4 @@ export interface ExtraMenuItem {
 export const EXTRA_MENU: ExtraMenuItem[] = [
   { path: "/study", menu: "学习规划", after: "/goals" },
   { path: "/subject-selection", menu: "选科", after: "/goals" },
-  { path: "/grad", menu: "研究生", after: "/career" },
 ];

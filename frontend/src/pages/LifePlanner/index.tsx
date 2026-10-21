@@ -1,15 +1,14 @@
 import { useState } from "react";
 import {
   Card, List, Button, Modal, Form, Input, Select, DatePicker,
-  Tag, Typography, message, Progress, Space, Slider, Alert,
+  Tag, message, Progress, Space, Slider, Alert, Rate,
 } from "antd";
-import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { PlusOutlined, DeleteOutlined, EditOutlined, FlagOutlined } from "@ant-design/icons";
 import apiClient from "@/api/client";
+import PageHeader from "@/components/PageHeader";
 import { useAsyncData } from "@/hooks/useAsyncData";
 import type { LifeGoal } from "@/types";
 import dayjs from "dayjs";
-
-const { Title } = Typography;
 
 const categories = [
   { label: "学习", value: "study" }, { label: "职业", value: "career" },
@@ -87,13 +86,17 @@ export default function LifePlanner() {
   };
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <Title level={3}>人生目标</Title>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => {
-          setEditingGoal(null); form.resetFields(); setModalOpen(true);
-        }}>添加目标</Button>
-      </div>
+    <div className="lp-page">
+      <PageHeader
+        icon={<FlagOutlined />}
+        title="人生目标"
+        subtitle="长期目标拆解、进度追踪与优先级管理"
+        extra={
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => {
+            setEditingGoal(null); form.resetFields(); setModalOpen(true);
+          }}>添加目标</Button>
+        }
+      />
       {error && (
         <Alert
           type="error"
@@ -134,7 +137,7 @@ export default function LifePlanner() {
                       onChange={(v) => handleProgress(goal, v)} style={{ maxWidth: 300 }} />
                     <Space size="large">
                       {goal.target_date && <span>目标: {dayjs(goal.target_date).format("YYYY-MM-DD")}</span>}
-                      <span>优先级: {"⭐".repeat(goal.priority)}</span>
+                      <span>优先级: <Rate count={3} value={goal.priority} disabled style={{ fontSize: 14 }} /></span>
                     </Space>
                   </div>
                 }
@@ -156,7 +159,7 @@ export default function LifePlanner() {
             <Select options={categories} /></Form.Item>
           <Form.Item name="priority" label="优先级" initialValue={1}>
             <Select options={[
-              { label: "⭐ 低", value: 1 }, { label: "⭐⭐ 中", value: 2 }, { label: "⭐⭐⭐ 高", value: 3 },
+              { label: "低", value: 1 }, { label: "中", value: 2 }, { label: "高", value: 3 },
             ]} /></Form.Item>
           <Form.Item name="target_date" label="目标日期">
             <DatePicker style={{ width: "100%" }} /></Form.Item>

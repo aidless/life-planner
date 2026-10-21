@@ -4,6 +4,7 @@ import { Typography, Card, Button, Table, Tag, Upload, Modal, Progress, Result, 
 import { ArrowLeftOutlined, UploadOutlined, FileSearchOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import type { UploadFile, UploadProps } from "antd";
 import apiClient from "@/api/client";
+import PageHeader from "@/components/PageHeader";
 
 const { Paragraph, Text } = Typography;
 
@@ -162,17 +163,17 @@ export default function ExamAnalyzer() {
       },
     ];
     return (
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
+      <div className="lp-page">
         {contextHolder}
         <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => { setDiagnosis(null); loadExams(); }} style={{ marginBottom: 16, paddingLeft: 0 }}>
           返回列表
         </Button>
         <Result
           icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
-          title="📊 错题诊断报告"
+          title="错题诊断报告"
           subTitle={`${diagnosis.exam_name}（${diagnosis.subject}）| 得分：${diagnosis.score}/${diagnosis.total_score}`}
         />
-        <Card title="📋 诊断摘要" style={{ marginBottom: 24, borderRadius: 12 }}>
+        <Card title="诊断摘要" style={{ marginBottom: 24, borderRadius: 12 }}>
           <Paragraph>{diagnosis.summary}</Paragraph>
           {diagnosis.error_types.length > 0 && (
             <div style={{ marginTop: 16 }}>
@@ -184,11 +185,11 @@ export default function ExamAnalyzer() {
           )}
         </Card>
         {diagnosis.knowledge_points.length > 0 && (
-          <Card title="🧠 知识点掌握度分析" style={{ marginBottom: 24, borderRadius: 12 }}>
+          <Card title="知识点掌握度分析" style={{ marginBottom: 24, borderRadius: 12 }}>
             <Table dataSource={diagnosis.knowledge_points} columns={kpColumns} rowKey="name" pagination={false} size="small" />
           </Card>
         )}
-        <Card title="💡 提分建议" style={{ marginBottom: 24, borderRadius: 12 }}>
+        <Card title="提分建议" style={{ marginBottom: 24, borderRadius: 12 }}>
           <ul style={{ margin: 0, paddingLeft: 20 }}>
             {diagnosis.suggestions.map((s: string, i: number) => <li key={i}><Text>{s}</Text></li>)}
           </ul>
@@ -224,11 +225,14 @@ export default function ExamAnalyzer() {
   ];
 
   return (
-    <div style={{ maxWidth: 1000, margin: "0 auto", padding: 24 }}>
+    <div className="lp-page">
       {contextHolder}
-      <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/dashboard")} style={{ marginBottom: 16, paddingLeft: 0 }}>
-        返回首页
-      </Button>
+      <PageHeader
+        icon={<FileSearchOutlined />}
+        title="错题分析"
+        subtitle="上传试卷，AI 定位薄弱知识点并给出提分建议"
+        extra={<Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/dashboard")} style={{ paddingLeft: 0 }}>返回首页</Button>}
+      />
       <Card
         title={<span><FileSearchOutlined /> 错题分析记录</span>}
         extra={<Button type="primary" icon={<UploadOutlined />} onClick={() => { setUploadFileList([]); setUploadExamName(""); setUploadModalOpen(true); }}>上传试卷</Button>}

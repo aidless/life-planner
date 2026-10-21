@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Typography, Progress, Card, Button, Radio, Result, Table, Tag, Space, message } from "antd";
-import { ArrowLeftOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import { Typography, Progress, Card, Button, Radio, Table, Tag, Space, message } from "antd";
+import { ArrowLeftOutlined, CheckCircleOutlined, CompassOutlined } from "@ant-design/icons";
+import PageHeader from "@/components/PageHeader";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -145,15 +146,18 @@ export default function SubjectSelection() {
   // ---- Render: Intro ----
   if (step === "intro") {
     return (
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: 24 }}>
-        <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/dashboard")} style={{ marginBottom: 16, paddingLeft: 0 }}>
-          返回首页
-        </Button>
+      <div className="lp-page" style={{ maxWidth: 800 }}>
+        <PageHeader
+          icon={<CompassOutlined />}
+          title="霍兰德职业兴趣测评"
+          subtitle="通过 60 道情景选择题，从 6 个维度评估你的职业兴趣倾向，AI 推荐最适合的高考选科组合"
+          extra={
+            <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/dashboard")}>
+              返回首页
+            </Button>
+          }
+        />
         <Card style={{ borderRadius: 12 }}>
-          <Title level={3}>🎯 霍兰德职业兴趣测评</Title>
-          <Paragraph>
-            通过 60 道情景选择题，从 6 个维度评估你的职业兴趣倾向，AI 推荐最适合的高考选科组合。
-          </Paragraph>
           <div style={{ background: "#f5f5f5", padding: 16, borderRadius: 8, marginBottom: 24 }}>
             <Text strong>6 个维度：</Text>
             <ul style={{ marginTop: 8, marginBottom: 0 }}>
@@ -163,7 +167,7 @@ export default function SubjectSelection() {
             </ul>
           </div>
           <Paragraph type="secondary" style={{ fontSize: 12 }}>
-            ⚠️ 本工具为本地离线版本，题目与推荐组合内置。所有数据仅在你的浏览器中处理，不上传服务器。
+            注意：本工具为本地离线版本，题目与推荐组合内置。所有数据仅在你的浏览器中处理，不上传服务器。
           </Paragraph>
           <Button type="primary" size="large" onClick={() => setStep("question")}>
             开始测评 →
@@ -176,13 +180,19 @@ export default function SubjectSelection() {
   // ---- Render: Questions ----
   if (step === "question") {
     return (
-      <div style={{ maxWidth: 700, margin: "0 auto", padding: 24 }}>
-        <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/dashboard")} style={{ marginBottom: 16, paddingLeft: 0 }}>
-          返回首页
-        </Button>
+      <div className="lp-page" style={{ maxWidth: 700 }}>
+        <PageHeader
+          icon={<CompassOutlined />}
+          title="霍兰德职业兴趣测评"
+          subtitle={`进度：第 ${currentIndex + 1} 题 / 共 ${total} 题`}
+          extra={
+            <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/dashboard")}>
+              返回首页
+            </Button>
+          }
+        />
         <Card style={{ borderRadius: 12 }}>
           <div style={{ marginBottom: 16 }}>
-            <Text type="secondary">进度：{currentIndex + 1} / {total}</Text>
             <Progress percent={progress} strokeColor="#1677ff" />
           </div>
           <Title level={4} style={{ marginBottom: 24 }}>{currentQ.text}</Title>
@@ -235,17 +245,19 @@ export default function SubjectSelection() {
   const recCombinations = SUBJECT_COMBINATIONS.filter((c) => recIds.includes(c.id));
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
-      <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => setStep("intro")} style={{ marginBottom: 16, paddingLeft: 0 }}>
-        重新测评
-      </Button>
-      <Result
+    <div className="lp-page" style={{ maxWidth: 900 }}>
+      <PageHeader
         icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
-        title="🎉 测评完成"
-        subTitle={`你的霍兰德代码：${hollandCode}（共 ${totalScore} 分）`}
+        title="测评完成"
+        subtitle={`你的霍兰德代码：${hollandCode}（共 ${totalScore} 分）`}
+        extra={
+          <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => setStep("intro")}>
+            重新测评
+          </Button>
+        }
       />
 
-      <Card title="📊 6 维度得分" style={{ marginBottom: 24, borderRadius: 12 }}>
+      <Card title="6 维度得分" style={{ marginBottom: 24, borderRadius: 12 }}>
         <Table
           dataSource={HOLLAND.map((d) => ({
             key: d,
@@ -284,7 +296,7 @@ export default function SubjectSelection() {
         />
       </Card>
 
-      <Card title="🎯 AI 推荐选科组合" style={{ marginBottom: 24, borderRadius: 12 }}>
+      <Card title="AI 推荐选科组合" style={{ marginBottom: 24, borderRadius: 12 }}>
         <Paragraph type="secondary">
           基于你的 Top 1 维度 <Tag color="orange">{HOLLAND_META[top3[0].dim].name}</Tag>，为你推荐以下组合：
         </Paragraph>
@@ -305,12 +317,12 @@ export default function SubjectSelection() {
           size="middle"
         />
         <Paragraph type="secondary" style={{ fontSize: 12, marginTop: 16 }}>
-          💡 提示：选科决策需结合个人目标大学、目标专业、所在省份的选科要求综合判断。
+          提示：选科决策需结合个人目标大学、目标专业、所在省份的选科要求综合判断。
           本结果仅供参考，最终以你的兴趣 + 实力 + 升学规划为准。
         </Paragraph>
       </Card>
 
-      <Card title="📋 所有可选组合一览" style={{ borderRadius: 12 }}>
+      <Card title="所有可选组合一览" style={{ borderRadius: 12 }}>
         <Table
           dataSource={SUBJECT_COMBINATIONS.map((c) => ({ ...c, key: c.id }))}
           columns={[

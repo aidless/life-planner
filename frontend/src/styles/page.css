@@ -1,0 +1,61 @@
+/* 全站统一页面容器与页头（视觉 v2.2，与 Dashboard/dashboard.css 同字阶） */
+
+.lp-page {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.lp-page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.lp-page-head-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.lp-page-head-icon {
+  font-size: 22px;
+  line-height: 1.4;
+  color: #595959;
+  flex-shrink: 0;
+}
+
+.lp-page-head-text {
+  min-width: 0;
+}
+
+.lp-page-title.ant-typography {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.lp-page-subtitle.ant-typography {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.lp-page-head-extra {
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+/* KPI 数字（视觉 v2.4：收敛各页手写的 fontSize 30 / #52c41a） */
+.lp-kpi-value {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.lp-kpi-value--ok {
+  color: #52c41a;
+}

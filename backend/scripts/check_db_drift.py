@@ -30,8 +30,9 @@ def schema_of(url):
 
 def main():
     from sqlalchemy import create_engine
-    from app.modules.loader import discover
+    from app.modules.loader import discover, load_archive_models
     discover()
+    load_archive_models()  # 软归档域 models 登记，保持 create_all 与 alembic parity
     import models  # noqa: F401
     from app.shared.base_model import Base as AppBase
     from database import Base as LegacyBase

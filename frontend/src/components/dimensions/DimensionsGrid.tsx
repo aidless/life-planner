@@ -5,6 +5,7 @@
  */
 
 import { Col, Row, Typography } from "antd";
+import { AppstoreOutlined, LayoutOutlined } from "@ant-design/icons";
 import {
   AUXILIARY_DIMENSIONS,
   CORE_DIMENSIONS,
@@ -37,7 +38,7 @@ export default function DimensionsGrid({ scores }: Props) {
           }}
         >
           <Title level={5} style={{ margin: 0 }}>
-            ⭐ 6 核心维度
+            <AppstoreOutlined style={{ marginRight: 8 }} />6 核心维度
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
             （学业/职业、健康、财务、习惯、心理、家庭）
@@ -63,7 +64,7 @@ export default function DimensionsGrid({ scores }: Props) {
           }}
         >
           <Title level={5} style={{ margin: 0 }}>
-            🌱 6 辅助维度
+            <LayoutOutlined style={{ marginRight: 8 }} />6 辅助维度
           </Title>
           <Text type="secondary" style={{ fontSize: 12 }}>
             （兴趣、社交、学习、旅行、亲密、意义）

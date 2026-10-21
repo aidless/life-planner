@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Card, Button, Typography, Space, List, Tag } from "antd";
 import { RobotOutlined, SendOutlined } from "@ant-design/icons";
 import apiClient from "@/api/client";
+import PageHeader from "@/components/PageHeader";
 
-const { Title, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 const modules = [
   { key: "life", name: "人生规划" },
@@ -38,9 +39,12 @@ export default function AICoach() {
   };
 
   return (
-    <div>
-      <Title level={3}>AI 教练</Title>
-      <Paragraph type="secondary">选择领域，向 AI 教练提问，获取个性化指导</Paragraph>
+    <div className="lp-page">
+      <PageHeader
+        icon={<RobotOutlined />}
+        title="AI 教练"
+        subtitle="选择领域，向 AI 教练提问，获取个性化指导"
+      />
 
       <div style={{ marginBottom: 16 }}>
         <Space wrap>
@@ -57,7 +61,7 @@ export default function AICoach() {
         </Space>
       </div>
 
-      <Card style={{ height: 400, overflow: "auto", marginBottom: 16 }}>
+      <Card style={{ height: 400, overflow: "auto", marginBottom: 16, borderRadius: 12 }}>
         {messages.length === 0 ? (
           <div style={{ textAlign: "center", color: "#999", paddingTop: 150 }}>
             <RobotOutlined style={{ fontSize: 48, marginBottom: 16 }} />

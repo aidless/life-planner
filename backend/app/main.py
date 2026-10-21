@@ -102,6 +102,7 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
 # 每个域靠自家 manifest.py 自声明；删域 = 删目录，服务照常启动。
 # router 前缀清单见各 manifest；loader 干跑校验见 scripts/check_module_menu.py。
 from app.modules.loader import discover as _discover_modules
+from app.modules.loader import load_archive_models as _load_archive_models
 from app.modules.loader import to_api_payload as _modules_payload
 
 settings = get_settings()
@@ -145,6 +146,8 @@ def create_app() -> FastAPI:
     # P1-fix 语义保留：Base 先建占 users 表，Legacy 后建、重名跳过。
     from database import Base as LegacyBase
     _modules = _discover_modules()
+    # 软归档域 models 登记：路由下线但表结构/历史数据保留，与 alembic head 保持 parity。
+    _load_archive_models()
     Base.metadata.create_all(bind=engine)
     LegacyBase.metadata.create_all(bind=engine)
 

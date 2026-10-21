@@ -45,3 +45,13 @@ dist/
 
 # Large binaries (playwright)
 frontend/node_modules/playwright-core/.local-browsers/
+
+
+# --- added by WorkBuddy takeover 2026-10-21 ---
+!.env.template
+data/
+models/
+.regression_tmp/
+*.bak
+
+*.bak*

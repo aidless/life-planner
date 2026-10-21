@@ -1,16 +1,34 @@
 /**
- * Dashboard v2 — 12 维度人生仪表盘（接入真实数据）
+ * Dashboard v2.1 — professional visual pass (logic unchanged)
  *
- * 数据来源：/api/dashboard 聚合 12 维度 + milestones + AI recommendations
+ * What changed vs v2:
+ * - removed nested Layout/Header/Footer (AppLayout already provides chrome;
+ *   double header + double footer was the biggest "toy" signal)
+ * - removed all emoji; section headers use antd icons + typographic hierarchy
+ * - hero / stat / recommendation / milestone / entry all share one spacing
+ *   language (16px radius, theme.css vars, icon tiles)
+ * - 12-dimension entry grid fixed: dimensionConfig only declares 1 path, so the
+ *   old filter (coming_soon && path) rendered an empty card. Now uses an
+ *   explicit route map covering the real routes in App.tsx.
+ *
+ * Data source unchanged: GET /api/dashboard.
  */
 
 import { useEffect, useState } from "react";
 import {
-  Avatar, Card, Col, Dropdown, Layout, Row, Tag, Typography,
-  message, Alert,
+  Avatar, Button, Card, Col, Dropdown, Progress, Row, Tag, Typography,
+  message, Alert, List,
 } from "antd";
 import {
-  BulbOutlined, LogoutOutlined, UserOutlined, ArrowRightOutlined,
+  ArrowRightOutlined,
+  CalendarOutlined,
+  CompassOutlined,
+  DashboardOutlined,
+  FireOutlined,
+  LineChartOutlined,
+  LogoutOutlined,
+  BulbOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
@@ -18,12 +36,11 @@ import apiClient from "@/api/client";
 import DimensionsGrid from "@/components/dimensions/DimensionsGrid";
 import FiveYearOverview from "@/components/dimensions/FiveYearOverview";
 import LoadingState from "@/components/LoadingState";
-import { DIMENSIONS, getHealthLevel } from "@/config/dimensionConfig";
+import { getHealthLevel } from "@/config/dimensionConfig";
 import type { MenuProps } from "antd";
+import "./dashboard.css";
 
-const { Title, Text, Paragraph } = Typography;
-const { Header, Content, Footer } = Layout;
-
+const { Text, Paragraph, Title } = Typography;
 
 interface DashboardData {
   user_id: number;
@@ -53,6 +70,26 @@ interface DashboardData {
   total_modules: number;
 }
 
+/** dimension key -> real route in App.tsx (dimensionConfig only declares 1 path) */
+const DIMENSION_ROUTES: Record<string, string> = {
+  career: "/college",
+  health: "/health",
+  finance: "/finance",
+  habits: "/habits",
+  psychology: "/psychology",
+  family: "/family",
+  interest: "/interest",
+  social: "/social",
+  learning: "/learning",
+  travel: "/travel",
+  intimacy: "/intimacy",
+  meaning: "/meaning",
+};
+
+const CATEGORY_LABEL: Record<string, string> = {
+  family: "家庭",
+  intimacy: "亲密",
+};
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -77,9 +114,9 @@ export default function Dashboard() {
       } else {
         setError(r.data.error || "加载失败");
       }
-    } catch (err: any) {
-      const msg = err.userMessage || err.message || "Dashboard 加载失败，请稍后重试";
-      setError(msg);
+    } catch (err: unknown) {
+      const e = err as { userMessage?: string; message?: string };
+      setError(e.userMessage || e.message || "Dashboard 加载失败，请稍后重试");
     } finally {
       setLoading(false);
     }
@@ -104,189 +141,216 @@ export default function Dashboard() {
     ? Object.fromEntries(dashboard.dimensions.map((d) => [d.key, d.score]))
     : {};
 
-  const overallLevel = getHealthLevel(dashboard?.average_score || 0);
+  const avgScore = dashboard?.average_score ?? 0;
+  const overallLevel = getHealthLevel(avgScore);
   const lowDims = dashboard ? [...dashboard.dimensions].sort((a, b) => a.score - b.score).slice(0, 1) : [];
+  const today = new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
 
   return (
-    <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
+    <div className="lp-dash">
       {contextHolder}
-      <Header
-        style={{
-          background: "#fff",
-          padding: "0 24px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <Title level={4} style={{ margin: 0, color: "#1677ff" }}>🧭 Life Planner</Title>
-          <Text type="secondary" style={{ fontSize: 12 }}>12 维度人生仪表盘</Text>
-        </div>
-        <Dropdown menu={{ items: userMenu }} placement="bottomRight">
-          <div style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-            <Avatar icon={<UserOutlined />} style={{ backgroundColor: "#1677ff" }} />
-            <Text>{user?.username || "用户"}</Text>
+
+      {error ? (
+        <Alert
+          type="error"
+          showIcon
+          message="仪表盘加载失败"
+          description={error}
+          action={<a onClick={() => fetchDashboard()}>重试</a>}
+        />
+      ) : null}
+
+      <LoadingState loading={loading} error={null} empty={!dashboard} emptyText="暂无仪表盘数据，先去记录一条日常吧">
+        {/* Hero — single page header (AppLayout already owns the blue top bar) */}
+        <section className="lp-hero">
+          <div>
+            <div className="lp-eyebrow">总览 · 12 维度人生仪表盘</div>
+            {/* e2e 契约：仪表盘首屏必须有 h3（25-pages.spec selector=h3），故用 Title level=3 */}
+            <Title level={3} style={{ margin: 0 }}>欢迎回来，{user?.username || "同学"}</Title>
+            <div className="lp-hero-sub">{today} · 先看最弱的一块，再决定今天做什么</div>
           </div>
-        </Dropdown>
-      </Header>
-
-      <Content style={{ padding: "24px 32px", maxWidth: 1400, margin: "0 auto", width: "100%" }}>
-        {error ? (
-          <Alert
-            type="error"
-            showIcon
-            message="Dashboard 加载失败"
-            description={error}
-            action={<a onClick={() => fetchDashboard()}>重试</a>}
-            style={{ marginBottom: 24 }}
-          />
-        ) : null}
-        <LoadingState loading={loading} error={null} empty={!dashboard}>
-          {/* Welcome */}
-          <div style={{ marginBottom: 24 }}>
-            <Title level={3} style={{ marginBottom: 4 }}>
-              👋 欢迎回来，{user?.username || "同学"}！
-            </Title>
-            <Paragraph type="secondary" style={{ marginBottom: 0 }}>
-              {new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric", weekday: "long" })}
-              ，今天也是规划人生的好日子。
-            </Paragraph>
+          <div className="lp-hero-actions">
+            <Dropdown menu={{ items: userMenu }} placement="bottomRight">
+              <div className="lp-userchip">
+                <Avatar size="small" icon={<UserOutlined />} />
+                <Text style={{ fontSize: 13 }}>{user?.username || "用户"}</Text>
+              </div>
+            </Dropdown>
+            <Button onClick={() => navigate("/daily")}>去记录</Button>
+            <Button type="primary" onClick={() => navigate("/recommend")}>
+              查看推荐 <ArrowRightOutlined />
+            </Button>
           </div>
+        </section>
 
-          {/* 上方 3 个 summary 卡 */}
-          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-            <Col xs={24} sm={8}>
-              <Card style={{ borderRadius: 12, background: overallLevel.bgColor }}>
-                <Text type="secondary" style={{ fontSize: 12 }}>12 维度综合健康度</Text>
-                <div style={{ fontSize: 36, fontWeight: 700, color: overallLevel.color, lineHeight: 1, margin: "8px 0" }}>
-                  {dashboard?.average_score || 0}
+        {/* Summary stats */}
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={8}>
+            <Card className="lp-stat-card" styles={{ body: { padding: 20 } }}>
+              <div className="lp-stat-top">
+                <div className="lp-icon-tile" style={{ background: overallLevel.bgColor, color: overallLevel.color }}>
+                  <DashboardOutlined />
                 </div>
-                <Text style={{ color: overallLevel.color }}>
-                  {dashboard?.average_level || overallLevel.label} · 12 维度平均
-                </Text>
-              </Card>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Card style={{ borderRadius: 12 }}>
-                <Text type="secondary" style={{ fontSize: 12 }}>已激活维度</Text>
-                <div style={{ fontSize: 36, fontWeight: 700, color: "#1677ff", lineHeight: 1, margin: "8px 0" }}>
-                  {dashboard ? `${dashboard.active_modules_count}/12` : `0/12`}
-                </div>
-                <Text type="secondary">有数据即激活；11 子域已上线</Text>
-              </Card>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Card style={{ borderRadius: 12 }}>
-                <Text type="secondary" style={{ fontSize: 12 }}>最需要关注</Text>
-                {lowDims.length > 0 ? (
-                  <>
-                    <div style={{ fontSize: 18, fontWeight: 600, color: "#f5222d", margin: "8px 0" }}>
-                      {lowDims[0].name} · {lowDims[0].score}
-                    </div>
-                    <Text type="secondary">{lowDims[0].level} · 点击下方卡片开始记录</Text>
-                  </>
-                ) : (
-                  <Text type="secondary">—</Text>
-                )}
-              </Card>
-            </Col>
-          </Row>
-
-          {/* AI 推荐 */}
-          {dashboard && dashboard.ai_recommendations.length > 0 && (
-            <Alert
-              type="info"
-              icon={<BulbOutlined />}
-              showIcon
-              style={{ marginBottom: 24 }}
-              message="AI 教练建议"
-              description={
-                <div style={{ marginTop: 8 }}>
-                  {dashboard.ai_recommendations.map((rec, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        marginBottom: 8,
-                        padding: "8px 12px",
-                        background: rec.priority === "high" ? "#fff1f0" : "#f6ffed",
-                        borderRadius: 6,
-                      }}
-                    >
-                      <Tag color={rec.priority === "high" ? "red" : "orange"} style={{ marginRight: 8 }}>
-                        {rec.dimension} · {rec.priority === "high" ? "高优先级" : "中优先级"}
-                      </Tag>
-                      <Text strong style={{ marginRight: 8 }}>{rec.action}</Text>
-                      <Text type="secondary" style={{ fontSize: 12 }}>{rec.reason}</Text>
-                    </div>
-                  ))}
-                </div>
-              }
-            />
-          )}
-
-          {/* 即将到来的里程碑 */}
-          {dashboard && dashboard.next_milestones.length > 0 && (
-            <Card title="🎯 即将到来的里程碑" style={{ marginBottom: 24, borderRadius: 12 }}>
-              <Row gutter={[12, 12]}>
-                {dashboard.next_milestones.slice(0, 6).map((m, idx) => {
-                  const color = m.category === "family" ? "#1677ff" : "#ff4d4f";
-                  return (
-                    <Col xs={24} sm={12} md={8} key={idx}>
-                      <Card type="inner" size="small" style={{ background: "#fafafa" }}>
-                        <Text type="secondary" style={{ fontSize: 11 }}>
-                          {m.category === "family" ? "🎂 家庭" : "💝 亲密"}
-                        </Text>
-                        <div style={{ fontSize: 14, marginTop: 4 }}>
-                          {m.title}
-                        </div>
-                        <div style={{ fontSize: 22, color, fontWeight: 600, marginTop: 4 }}>
-                          还有 {m.days_until} 天
-                        </div>
-                      </Card>
-                    </Col>
-                  );
-                })}
-              </Row>
+                <span className="lp-stat-label">12 维度综合健康度</span>
+              </div>
+              <div className="lp-stat-value" style={{ color: overallLevel.color }}>
+                {avgScore}
+              </div>
+              <div className="lp-stat-sub">
+                {dashboard?.average_level || overallLevel.label} · 12 维度平均
+              </div>
+              <Progress
+                percent={Math.max(0, Math.min(100, avgScore))}
+                strokeColor={overallLevel.color}
+                showInfo={false}
+                size="small"
+                style={{ marginTop: 12 }}
+              />
             </Card>
-          )}
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card className="lp-stat-card" styles={{ body: { padding: 20 } }}>
+              <div className="lp-stat-top">
+                <div className="lp-icon-tile" style={{ background: "#e6f4ff", color: "#1677ff" }}>
+                  <LineChartOutlined />
+                </div>
+                <span className="lp-stat-label">已激活维度</span>
+              </div>
+              <div className="lp-stat-value" style={{ color: "#1677ff" }}>
+                {dashboard ? `${dashboard.active_modules_count}/12` : "0/12"}
+              </div>
+              <div className="lp-stat-sub">有数据即激活 · 覆盖学业 / 健康 / 生活全域</div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card className="lp-stat-card" styles={{ body: { padding: 20 } }}>
+              <div className="lp-stat-top">
+                <div className="lp-icon-tile" style={{ background: "#fff1f0", color: "#f5222d" }}>
+                  <FireOutlined />
+                </div>
+                <span className="lp-stat-label">最需要关注</span>
+              </div>
+              {lowDims.length > 0 ? (
+                <>
+                  <div style={{ fontSize: 20, fontWeight: 650, color: "#cf1322", margin: "2px 0 6px" }}>
+                    {lowDims[0].name} · {lowDims[0].score}分
+                  </div>
+                  <div className="lp-stat-sub">
+                    {lowDims[0].level} ·
+                    <a
+                      onClick={() => navigate(DIMENSION_ROUTES[lowDims[0].key] ?? "/recommend")}
+                      style={{ marginLeft: 4 }}
+                    >
+                      去改善 <ArrowRightOutlined style={{ fontSize: 11 }} />
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <Text type="secondary">暂无数据</Text>
+              )}
+            </Card>
+          </Col>
+        </Row>
 
-          {/* 12 维度网格 */}
-          <div style={{ marginBottom: 24 }}>
-            <DimensionsGrid scores={scoresFromApi} />
-          </div>
-
-          {/* 5 年人生总览 */}
-          <div style={{ marginBottom: 24 }}>
-            <FiveYearOverview />
-          </div>
-
-          {/* 12 维度模块入口（active 11 个） */}
-          <Card title="🌟 进入 12 维度模块" style={{ borderRadius: 12 }}>
-            <Row gutter={[16, 16]}>
-              {DIMENSIONS.filter((d) => d.status === "coming_soon" && d.path).map((d) => (
-                <Col xs={12} sm={8} md={6} key={d.key}>
-                  <Card hoverable size="small" onClick={() => navigate(d.path!)} style={{ borderColor: d.color }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ fontSize: 22, color: d.color }}>{d.icon}</div>
-                      <Text strong>{d.name}</Text>
+        {/* Coach recommendations */}
+        {dashboard && dashboard.ai_recommendations.length > 0 && (
+          <Card
+            className="lp-section-card"
+            title={<span><BulbOutlined style={{ marginRight: 8 }} />教练建议</span>}
+            extra={<a onClick={() => navigate("/recommend")}>查看全部推荐 <ArrowRightOutlined style={{ fontSize: 11 }} /></a>}
+            styles={{ body: { padding: 16 } }}
+          >
+            <List
+              dataSource={dashboard.ai_recommendations.slice(0, 4)}
+              renderItem={(rec, idx) => (
+                <List.Item key={idx} className="lp-rec-item" style={{ border: "1px solid var(--border-light)" }}>
+                  <div style={{ width: "100%" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+                      <Tag color={rec.priority === "high" ? "red" : "orange"}>
+                        {rec.dimension} · {rec.priority === "high" ? "高优先级" : "建议"}
+                      </Tag>
+                      <Text strong>{rec.action}</Text>
                     </div>
-                    <div style={{ marginTop: 8, fontSize: 12, color: "#999" }}>
-                      健康度：{scoresFromApi[d.key] ?? 0}
-                      <ArrowRightOutlined style={{ marginLeft: 6 }} />
+                    <Text type="secondary" style={{ fontSize: 12 }}>{rec.reason}</Text>
+                  </div>
+                </List.Item>
+              )}
+            />
+          </Card>
+        )}
+
+        {/* Milestones */}
+        {dashboard && dashboard.next_milestones.length > 0 && (
+          <Card
+            className="lp-section-card"
+            title={<span><CalendarOutlined style={{ marginRight: 8 }} />即将到来的里程碑</span>}
+            extra={<Text type="secondary" style={{ fontSize: 12 }}>{dashboard.next_milestones.length} 个在路上</Text>}
+            styles={{ body: { padding: 16 } }}
+          >
+            <Row gutter={[12, 12]}>
+              {dashboard.next_milestones.slice(0, 6).map((m, idx) => (
+                <Col xs={24} sm={12} md={8} key={idx}>
+                  <div className="lp-mile-tile">
+                    <Tag>{CATEGORY_LABEL[m.category] ?? m.category}</Tag>
+                    <Paragraph ellipsis={{ rows: 1 }} style={{ fontSize: 14, margin: "8px 0 0" }}>
+                      {m.title}
+                    </Paragraph>
+                    <div className="lp-mile-count">
+                      还有 {m.days_until} 天
                     </div>
-                  </Card>
+                  </div>
                 </Col>
               ))}
             </Row>
           </Card>
-        </LoadingState>
-      </Content>
+        )}
 
-      <Footer style={{ textAlign: "center", color: "#999" }}>
-        Life Planner v1.0 · 12 维度 · 12/11 子域已上线 · 陪你走过人生的每一步
-      </Footer>
-    </Layout>
+        {/* 12-dimension grid */}
+        <DimensionsGrid scores={scoresFromApi} />
+
+        {/* 5-year overview */}
+        <FiveYearOverview />
+
+        {/* Module entries — all 12 with real routes */}
+        <Card
+          className="lp-section-card"
+          title={<span><CompassOutlined style={{ marginRight: 8 }} />进入 12 维度模块</span>}
+          styles={{ body: { padding: 16 } }}
+        >
+          <Row gutter={[12, 12]}>
+            {dashboard?.dimensions.map((d) => {
+              const route = DIMENSION_ROUTES[d.key];
+              if (!route) return null;
+              const level = getHealthLevel(d.score);
+              return (
+                <Col xs={12} sm={8} md={6} key={d.key}>
+                  <Card
+                    hoverable
+                    size="small"
+                    className="lp-entry-card"
+                    onClick={() => navigate(route)}
+                  >
+                    <div className="lp-entry-row">
+                      <div className="lp-entry-icon" style={{ color: level.color, background: level.bgColor }}>
+                        <CompassOutlined />
+                      </div>
+                      <Text strong>{d.name}</Text>
+                    </div>
+                    <div className="lp-entry-foot">
+                      <span>健康度 {d.score} · {d.level}</span>
+                      <ArrowRightOutlined />
+                    </div>
+                  </Card>
+                </Col>
+              );
+            })}
+          </Row>
+        </Card>
+
+        <Paragraph type="secondary" style={{ fontSize: 12, textAlign: "center", margin: "4px 0 0" }}>
+          数据来自各维度真实记录 · 每天 08:00 与 21:00 自动生成教练建议
+        </Paragraph>
+      </LoadingState>
+    </div>
   );
 }

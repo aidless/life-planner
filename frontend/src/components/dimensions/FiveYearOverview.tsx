@@ -6,6 +6,7 @@
  */
 
 import { Card, Col, Row, Tag, Typography } from "antd";
+import { ClockCircleOutlined } from "@ant-design/icons";
 import { FIVE_YEAR_MILESTONES } from "@/config/dimensionConfig";
 
 const { Title, Text } = Typography;
@@ -15,7 +16,7 @@ export default function FiveYearOverview() {
     <Card
       title={
         <span>
-          🎯 5 年人生总览{" "}
+          <ClockCircleOutlined style={{ marginRight: 8 }} />5 年人生总览{" "}
           <Text type="secondary" style={{ fontSize: 12, fontWeight: "normal" }}>
             （今年 → 5 年后）
           </Text>
@@ -65,7 +66,7 @@ export default function FiveYearOverview() {
               <div style={{ marginTop: 12, display: "grid", gap: 6 }}>
                 <Row align="middle" gutter={8}>
                   <Col>
-                    <span style={{ fontSize: 14 }}>📚</span>
+                    <Tag style={{ margin: 0 }}>学业</Tag>
                   </Col>
                   <Col flex="auto">
                     <Text style={{ fontSize: 12 }}>{m.career}</Text>
@@ -73,7 +74,7 @@ export default function FiveYearOverview() {
                 </Row>
                 <Row align="middle" gutter={8}>
                   <Col>
-                    <span style={{ fontSize: 14 }}>❤️</span>
+                    <Tag style={{ margin: 0 }}>健康</Tag>
                   </Col>
                   <Col flex="auto">
                     <Text style={{ fontSize: 12 }}>{m.health}</Text>
@@ -81,7 +82,7 @@ export default function FiveYearOverview() {
                 </Row>
                 <Row align="middle" gutter={8}>
                   <Col>
-                    <span style={{ fontSize: 14 }}>💰</span>
+                    <Tag style={{ margin: 0 }}>财务</Tag>
                   </Col>
                   <Col flex="auto">
                     <Text style={{ fontSize: 12 }}>{m.finance}</Text>

@@ -1,8 +1,10 @@
 import { Card, Typography, Input, Button, Form, InputNumber, Select } from "antd";
+import { ReadOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import apiClient from "@/api/client";
+import PageHeader from "@/components/PageHeader";
 
-const { Title, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 export default function StudyPlanner() {
   const [result, setResult] = useState("");
@@ -22,10 +24,13 @@ export default function StudyPlanner() {
   };
 
   return (
-    <div>
-      <Title level={3}>学习规划</Title>
-      <Paragraph type="secondary">AI 帮你制定科学高效的学习计划</Paragraph>
-      <Card style={{ maxWidth: 700 }}>
+    <div className="lp-page">
+      <PageHeader
+        icon={<ReadOutlined />}
+        title="学习规划"
+        subtitle="AI 帮你制定科学高效的学习计划"
+      />
+      <Card style={{ maxWidth: 700, borderRadius: 12 }}>
         <Form layout="vertical" onFinish={handleAnalyze}>
           <Form.Item name="level" label="学段">
             <Select options={[

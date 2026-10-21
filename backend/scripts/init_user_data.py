@@ -23,17 +23,27 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.modules.auth.models import User
 
-from app.modules.health.models import HealthLog, ExerciseRecord
-from app.modules.finance.models import Transaction, Budget, FinancialGoal
-from app.modules.habits.models import Habit, HabitCheckin
-from app.modules.psychology.models import MoodLog, Reflection
-from app.modules.family.models import FamilyMember
-from app.modules.interest.models import Interest, InterestActivity
-from app.modules.social.models import Contact
-from app.modules.learning.models import Book, Course
-from app.modules.travel.models import Trip, BucketList
-from app.modules.intimacy.models import Relationship, Anniversary
-from app.modules.meaning.models import Value, LifePurpose
+# 立意收缩：11 个愿景层/明确不做域已软归档到 app.modules_archive。
+# 迁移目标只聚焦 4 场景，故这些归档域不再注入示例数据（即使 models 仍可导入）。
+_ARCHIVED_DOMAINS = {
+    "health", "finance", "habits", "psychology", "family", "interest",
+    "social", "learning", "travel", "intimacy", "meaning",
+}
+try:
+    from app.modules_archive.health.models import HealthLog, ExerciseRecord  # noqa: F401
+    from app.modules_archive.finance.models import Transaction, Budget, FinancialGoal  # noqa: F401
+    from app.modules_archive.habits.models import Habit, HabitCheckin  # noqa: F401
+    from app.modules_archive.psychology.models import MoodLog, Reflection  # noqa: F401
+    from app.modules_archive.family.models import FamilyMember  # noqa: F401
+    from app.modules_archive.interest.models import Interest, InterestActivity  # noqa: F401
+    from app.modules_archive.social.models import Contact  # noqa: F401
+    from app.modules_archive.learning.models import Book, Course  # noqa: F401
+    from app.modules_archive.travel.models import Trip, BucketList  # noqa: F401
+    from app.modules_archive.intimacy.models import Relationship, Anniversary  # noqa: F401
+    from app.modules_archive.meaning.models import Value, LifePurpose  # noqa: F401
+except (ImportError, ModuleNotFoundError):
+    # 归档域 models 不可用（已物理删除时）：静默降级，init_sample_data 本就跳过归档域。
+    pass
 
 
 def init_health(db: Session, user_id: int):
@@ -324,12 +334,14 @@ INIT_TASKS = [
 
 
 def init_sample_data(db: Session, user_id: int):
-    """Initialize 30 days of sample data for all 11 subdomains.
+    """初始化示例数据（立意收缩：仅注入非归档域）。
 
     Called from auth.register.
     """
     random.seed(user_id)  # Deterministic per user
     for name, fn in INIT_TASKS:
+        if name in _ARCHIVED_DOMAINS:
+            continue  # 愿景层/明确不做域已软归档，不注入
         try:
             fn(db, user_id)
         except Exception as e:

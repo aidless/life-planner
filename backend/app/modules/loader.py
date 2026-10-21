@@ -79,6 +79,30 @@ def discover(package: Any = _pkg) -> list[ModuleInfo]:
     return found
 
 
+ARCHIVE_MODULE_NAMES = [
+    "finance", "psychology", "family", "social", "intimacy", "travel",
+    "meaning", "interest", "health", "habits", "learning",
+]
+
+
+def load_archive_models() -> list[str]:
+    """软归档域 models 登记（立意收缩）。
+
+    归档域的路由/菜单/页面已下线，但其 SQLAlchemy models 仍按副作用导入，
+    使 Base.metadata.create_all 继续建这些表——与 alembic head 保持列级 parity
+    （check_db_drift.py 两路一致），且历史数据不丢、任一步可回滚。
+    返回成功导入的归档域名列表。
+    """
+    loaded: list[str] = []
+    for name in ARCHIVE_MODULE_NAMES:
+        try:
+            importlib.import_module(f"{_pkg.__name__}_archive.{name}.models")
+            loaded.append(name)
+        except (ModuleNotFoundError, ImportError):
+            continue  # 该归档域无 models 或已被物理删除：跳过
+    return loaded
+
+
 def to_api_payload(mods: list[ModuleInfo] | None = None) -> list[dict]:
     """给 GET /api/modules 用的可序列化聚合。"""
     return [

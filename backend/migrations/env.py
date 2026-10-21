@@ -51,8 +51,10 @@ SYNC_URL = _to_sync(RAW_URL)
 # Register all models: new app domains (Base wins on overlapping names)
 # plus legacy models (legacy-only tables). No engine is executed here.
 from app.modules.loader import discover as _discover  # noqa: E402
+from app.modules.loader import load_archive_models as _load_archive_models  # noqa: E402
 
 _discover()
+_load_archive_models()  # 软归档域 models 登记：迁移路径与 create_all 保持 parity
 import models  # noqa: E402,F401  (legacy tables onto database.Base)
 
 from app.shared.base_model import Base as AppBase  # noqa: E402

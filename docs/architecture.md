@@ -35,7 +35,7 @@
 | 模块 | 端点数 | 主要功能 |
 |---|---|---|
 | **auth** | 3 | 注册、登录、当前用户 |
-| **college** | 7 | 高考志愿推荐（51k+ 数据）|
+| **college** | 7 | 高考志愿推荐（50,865 行分数数据）|
 | **daily_tracker** | 5 | 每日活动 + AI 反馈 |
 | **exam_analyzer** | 5 | 上传试卷 + AI 错题诊断 |
 | **life_planner** | 5 | 长期目标 + 进度追踪 |
@@ -73,9 +73,9 @@
 | `daily_logs` | 每日记录 | 13 |
 | `exams` | 考试 | 11 |
 | `exam_questions` | 错题 | 9 |
-| `college_scores` | 录取分数线（51k+ 行）| 12 |
-| `college_info` | 大学基础信息（2.5k+ 行）| 11 |
-| `province_ranks` | 一分一段表（1.1k+ 行）| 8 |
+| `college_scores` | 录取分数线（50,865 行，2026-09 实测入库）| 12 |
+| `college_info` | 大学基础信息（0 行，暂无数据源）| 11 |
+| `province_ranks` | 一分一段表（550 行，山东 2025）| 8 |
 | `college_recommendations` | 志愿推荐历史 | 9 |
 | `subject_assessments` | 选科测评 | 12 |
 | `subject_combinations` | 选科组合 | 6 |

@@ -1,0 +1,179 @@
+/* Dashboard v2.1 — professional skin, no emoji, single page chrome.
+ * AppLayout already provides Header/Footer; this file only styles page content.
+ * Uses theme.css vars so dark mode keeps working. */
+
+.lp-dash {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lp-hero {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.lp-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  margin-bottom: 4px;
+}
+
+.lp-hero h3 {
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.lp-hero-sub {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.lp-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lp-userchip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 8px 4px 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-tertiary);
+}
+
+.lp-stat-card {
+  border-radius: 16px;
+  height: 100%;
+}
+
+.lp-stat-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.lp-icon-tile {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex: none;
+}
+
+.lp-stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.lp-stat-value {
+  font-size: 34px;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 2px 0 6px;
+}
+
+.lp-stat-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.lp-rec-item {
+  padding: 10px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+  margin-bottom: 8px;
+}
+
+.lp-rec-item:last-child {
+  margin-bottom: 0;
+}
+
+.lp-mile-tile {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 14px 16px;
+  height: 100%;
+}
+
+.lp-mile-count {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 6px;
+}
+
+.lp-section-card {
+  border-radius: 16px;
+}
+
+.lp-entry-card {
+  border-radius: 12px;
+  height: 100%;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.lp-entry-card:hover {
+  box-shadow: 0 4px 16px var(--shadow-color);
+}
+
+.lp-entry-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lp-entry-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex: none;
+}
+
+.lp-entry-foot {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+@media (max-width: 768px) {
+  .lp-hero {
+    padding: 16px;
+  }
+  .lp-stat-value {
+    font-size: 28px;
+  }
+}

@@ -27,6 +27,8 @@ class Settings:
 
     # AI
     ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+    # claude-sonnet-4-6 为 Anthropic 当前有效 dateless 型号（liteLLM provider 清单核实，
+    # 2026-09；dateless 别名始终指向该代最新快照）。设置 key 后自动生效。
     AI_MODEL: str = os.getenv("AI_MODEL", "claude-sonnet-4-6")
 
     # CORS
