@@ -15,7 +15,7 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://localhost:8001',
+        target: 'http://localhost:8000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/api'),
       },
@@ -24,17 +24,5 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('scheduler')) return 'react-vendor';
-            if (id.includes('antd') || id.includes('@ant-design')) return 'antd-vendor';
-            if (id.includes('axios') || id.includes('zustand')) return 'lib-vendor';
-            return 'misc-vendor';
-          }
-        },
-      },
-    },
   },
 })

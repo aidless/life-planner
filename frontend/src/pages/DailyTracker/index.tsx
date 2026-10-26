@@ -94,7 +94,7 @@ export default function DailyTracker() {
     { title: "操作", key: "actions",
       render: (_: unknown, record: DailyLog) => (
         <Space>
-          <Button size="small" icon={<RobotOutlined />} onClick={() => handleAnalyze(record)}>AI</Button>
+          <Button size="small" loading={analyzing} icon={<RobotOutlined />} onClick={() => handleAnalyze(record)}>AI</Button>
           <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
         </Space>
       ),

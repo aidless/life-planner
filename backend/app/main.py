@@ -5,6 +5,7 @@
 """
 
 import asyncio
+import logging
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Any
@@ -172,16 +173,26 @@ def create_app() -> FastAPI:
     # W36: 调大到 5000 避免 e2e 测试触发（Playwright 23 测试 + 页面请求 ~200）
     app.add_middleware(RateLimitMiddleware, max_requests=5000, window_seconds=60)
 
-    # W38: B4 Trust Boundary middleware (R2.2 case study)
-    from app.middleware.trust_bd import TrustBoundaryMiddleware
-    app.add_middleware(TrustBoundaryMiddleware)
+    # W38: B4 Trust Boundary middleware (R2.2 case study). The private
+    # trust-cap package is not part of this repository, so the optional
+    # audit layer must not prevent the consumer app from starting.
+    try:
+        from app.middleware.trust_bd import TrustBoundaryMiddleware
+        app.add_middleware(TrustBoundaryMiddleware)
+    except ImportError as exc:
+        logging.getLogger(__name__).warning(
+            "TrustBoundaryMiddleware disabled (trust-cap unavailable): %s", exc
+        )
     
     # W26: college models use the legacy Base (from database.py),
     # so we also create tables for it. Otherwise college tables are
     # missing and college endpoints 500.
     from database import Base as LegacyBase
-    LegacyBase.metadata.create_all(bind=engine)
+    # The new auth User and the legacy college User both claim the "users"
+    # table with different columns. Create the new schema first; the legacy
+    # create_all then skips the existing table and only adds college tables.
     Base.metadata.create_all(bind=engine)
+    LegacyBase.metadata.create_all(bind=engine)
 
     # Register all routers
     app.include_router(auth_router)

@@ -1,8 +1,20 @@
 """Application configuration loaded from environment variables."""
 
 import os
+import secrets
 from functools import lru_cache
 from typing import List
+
+
+def _jwt_secret() -> str:
+    """Use SECRET_KEY or the legacy JWT_SECRET_KEY; never sign with empty."""
+
+    configured = os.getenv("SECRET_KEY") or os.getenv("JWT_SECRET_KEY")
+    if configured:
+        return configured
+    # Local/demo fallback. Tokens do not survive a restart, but no one can
+    # forge them with an empty key. Production should set SECRET_KEY.
+    return secrets.token_urlsafe(48)
 
 
 class Settings:
@@ -19,7 +31,7 @@ class Settings:
     )
 
     # Authentication
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
+    SECRET_KEY: str = _jwt_secret()
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"),

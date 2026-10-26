@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import {
-  Card, Form, Input, InputNumber, Button, Table, Tag, Typography,
+  Card, Form, Input, Button, Table, Tag, Typography,
   Row, Col, message, Modal, Empty, InputNumber as AntInputNumber,
 } from "antd";
 import { BulbOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";

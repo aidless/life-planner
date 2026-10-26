@@ -15,7 +15,6 @@ const provinces = [
 ];
 
 const subjectOptions = ["物理", "化学", "生物", "政治", "历史", "地理"];
-const yearOptions = [2023, 2024, 2025];
 
 interface RecommendItem {
   id?: number;

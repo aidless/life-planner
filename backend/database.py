@@ -17,9 +17,20 @@ from config import settings
 
 logger = logging.getLogger(__name__)
 
+# The legacy layer is imported by app.main only for its Base, but it still
+# builds an async engine at import time. Accept the sync URL used by
+# app/config.py and the deployment files, and pick the matching async driver.
+_async_url = settings.DATABASE_URL
+if _async_url.startswith("postgresql+psycopg2://"):
+    _async_url = _async_url.replace("postgresql+psycopg2://", "postgresql+asyncpg://", 1)
+elif _async_url.startswith("postgresql://"):
+    _async_url = _async_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+elif _async_url.startswith("sqlite://") and "+aiosqlite" not in _async_url:
+    _async_url = _async_url.replace("sqlite://", "sqlite+aiosqlite://", 1)
+
 # Create async engine
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    _async_url,
     echo=settings.DATABASE_ECHO,
     future=True,
 )
@@ -34,8 +45,13 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 # Create sync engine (for scripts/migrations)
+_sync_url = (
+    settings.DATABASE_URL
+    .replace("+aiosqlite", "")
+    .replace("+asyncpg", "+psycopg2")
+)
 sync_engine = create_engine(
-    settings.DATABASE_URL.replace("+aiosqlite", ""),
+    _sync_url,
     echo=settings.DATABASE_ECHO,
 )
 

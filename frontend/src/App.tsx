@@ -13,6 +13,7 @@ import { useTheme } from '@/hooks/useTheme';
 const DashboardPage = React.lazy(() => import('./pages/Dashboard'));
 const LoginPage = React.lazy(() => import('./pages/Login'));
 const RegisterPage = React.lazy(() => import('./pages/Register'));
+const LandingPage = React.lazy(() => import('./pages/Landing'));
 const CollegeListPage = React.lazy(() => import('./pages/CollegeList'));
 const CollegeDetailPage = React.lazy(() => import('./pages/CollegeDetail'));
 const ScoreQueryPage = React.lazy(() => import('./pages/ScoreQuery'));
@@ -91,26 +92,49 @@ function AppLayout() {
   const selectedKey = computeSelected(path);
 
   // 菜单项（统一一处）
-  const menuItems = [
-    { key: '/dashboard', label: <Link to="/dashboard">仪表盘</Link> },
-    { key: '/daily', label: <Link to="/daily">日常记录</Link> },
-    { key: '/exams', label: <Link to="/exams">考试分析</Link> },
-    { key: '/goals', label: <Link to="/goals">人生目标</Link> },
-    { key: '/study', label: <Link to="/study">学习规划</Link> },
-    { key: '/subject-selection', label: <Link to="/subject-selection">选科</Link> },
-    { key: '/college', label: <Link to="/college">高考志愿</Link> },
-    { key: '/career', label: <Link to="/career">职业发展</Link> },
-    { key: '/grad', label: <Link to="/grad">研究生</Link> },
-    { key: '/ai', label: <Link to="/ai">AI 教练</Link> },
-    { key: '/psychology', label: <Link to="/psychology">心理</Link> },
-    { key: '/family', label: <Link to="/family">家庭</Link> },
-    { key: '/interest', label: <Link to="/interest">兴趣</Link> },
-    { key: '/social', label: <Link to="/social">社交</Link> },
-    { key: '/learning', label: <Link to="/learning">学习</Link> },
-    { key: '/travel', label: <Link to="/travel">旅行</Link> },
-    { key: '/intimacy', label: <Link to="/intimacy">亲密</Link> },
-    { key: '/meaning', label: <Link to="/meaning">意义</Link> },
+  const menuItems: any[] = [
+    { key: '/dashboard', label: '仪表盘' },
+    { key: '/daily', label: '今日记录' },
+    { key: '/goals', label: '人生目标' },
+    { key: '/study', label: '学习规划' },
+    { key: '/career', label: '职业发展' },
+    { key: '/ai', label: 'AI 教练' },
+    {
+      key: 'planning',
+      label: '规划',
+      children: [
+        { key: '/exams', label: '考试分析' },
+        { key: '/subject-selection', label: '选科' },
+        { key: '/college', label: '高考志愿' },
+        { key: '/grad', label: '研究生' },
+        { key: '/learning', label: '学习' },
+      ],
+    },
+    {
+      key: 'more',
+      label: '更多',
+      children: [
+        { key: '/psychology', label: '心理' },
+        { key: '/family', label: '家庭' },
+        { key: '/interest', label: '兴趣' },
+        { key: '/social', label: '社交' },
+        { key: '/travel', label: '旅行' },
+        { key: '/intimacy', label: '亲密' },
+        { key: '/meaning', label: '意义' },
+      ],
+    },
   ];
+
+  const renderMenuItems = (dark: boolean) => menuItems.map((m) => ({
+    ...m,
+    label: m.children
+      ? (dark ? <span style={{ color: 'white' }}>{m.label}</span> : m.label)
+      : <Link to={m.key} style={dark ? { color: 'white' } : undefined}>{m.label}</Link>,
+    children: m.children?.map((c: any) => ({
+      ...c,
+      label: <Link to={c.key}>{c.label}</Link>,
+    })),
+  }));
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -133,10 +157,7 @@ function AppLayout() {
             mode="horizontal"
             selectedKeys={[selectedKey]}
             style={{ background: 'transparent', flex: 1, borderBottom: 'none', minWidth: 0, flexWrap: 'wrap' }}
-            items={menuItems.map((m) => ({
-              ...m,
-              label: <span style={{ color: 'white' }}>{m.label}</span>,
-            }))}
+            items={renderMenuItems(true)}
           />
         )}
       </Header>
@@ -152,20 +173,13 @@ function AppLayout() {
         <Menu
           mode="inline"
           selectedKeys={[selectedKey]}
-          items={menuItems.map((m) => ({
-            ...m,
-            label: <Link to={m.key}>{m.label}</Link>,
-          }))}
+          items={renderMenuItems(false)}
         />
       </Drawer>
       <Content style={{ padding: '24px 16px', background: '#f5f5f5' }}>
         <React.Suspense fallback={<SuspenseLoading />}>
           <ErrorBoundary>
           <Routes>
-            {/* 公开路由 */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-
             {/* 核心学业子页面（W36 修复：之前未路由） */}
             <Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
             <Route path="/daily" element={<RequireAuth><DailyTrackerPage /></RequireAuth>} />
@@ -195,7 +209,6 @@ function AppLayout() {
             <Route path="/meaning" element={<RequireAuth><MeaningPage /></RequireAuth>} />
 
             {/* 兜底 */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           </ErrorBoundary>
@@ -218,7 +231,16 @@ function App() {
       }}
     >
       <BrowserRouter>
-        <AppLayout />
+        <React.Suspense fallback={<SuspenseLoading />}>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/*" element={<AppLayout />} />
+            </Routes>
+          </ErrorBoundary>
+        </React.Suspense>
       </BrowserRouter>
     </ConfigProvider>
   );

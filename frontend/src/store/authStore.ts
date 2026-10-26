@@ -17,9 +17,24 @@ interface AuthState {
   clearError: () => void;
 }
 
+function readStoredAuth(): { user: any; token: string | null } {
+  const token = localStorage.getItem("token");
+  const raw = localStorage.getItem("user");
+  if (!token || !raw) return { user: null, token: null };
+  try {
+    return { user: JSON.parse(raw), token };
+  } catch {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    return { user: null, token: null };
+  }
+}
+
+const storedAuth = readStoredAuth();
+
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: null,
+  user: storedAuth.user,
+  token: storedAuth.token,
   loading: false,
   error: null,
 
@@ -27,7 +42,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true, error: null });
     try {
       const res = await apiClient.post<any>("/auth/login", { username, password });
-      const { access_token, user } = res.data;
+      const payload = res.data?.data ?? res.data;
+      const { access_token, user } = payload ?? {};
+      if (!access_token) throw new Error("登录响应缺少 access_token");
       localStorage.setItem("token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
       set({ user, token: access_token, loading: false });
@@ -48,9 +65,17 @@ export const useAuthStore = create<AuthState>((set) => ({
         password,
         display_name: display_name || username,
       });
-      const { access_token, user } = res.data;
+      const payload = res.data?.data ?? res.data;
+      const { access_token, user, demo_seeded } = payload ?? {};
+      if (!access_token) throw new Error("注册响应缺少 access_token");
       localStorage.setItem("token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
+      if (demo_seeded) {
+        localStorage.setItem("lp_demo_seeded", "1");
+        localStorage.removeItem("lp_demo_seeded_dismissed");
+      } else {
+        localStorage.removeItem("lp_demo_seeded");
+      }
       set({ user, token: access_token, loading: false });
       return true;
     } catch (err: any) {

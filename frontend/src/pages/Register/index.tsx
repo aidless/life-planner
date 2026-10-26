@@ -19,7 +19,7 @@ export default function Register() {
     setLoading(false);
     if (ok) {
       msgApi.success("注册成功，欢迎使用人生规划系统！");
-      setTimeout(() => navigate("/dashboard"), 1000);
+      navigate("/dashboard", { replace: true });
     }
   };
 

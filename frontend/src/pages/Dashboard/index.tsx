@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import {
-  Avatar, Card, Col, Dropdown, Layout, Row, Tag, Typography,
+  Avatar, Button, Card, Col, Dropdown, Layout, Row, Tag, Typography,
   message, Alert,
 } from "antd";
 import {
@@ -61,6 +61,10 @@ export default function Dashboard() {
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDemo, setShowDemo] = useState(
+    () => localStorage.getItem("lp_demo_seeded") === "1"
+      && localStorage.getItem("lp_demo_seeded_dismissed") !== "1",
+  );
 
   const fetchDashboard = async () => {
     if (!token) {
@@ -89,6 +93,11 @@ export default function Dashboard() {
     fetchDashboard();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const dismissDemo = () => {
+    localStorage.setItem("lp_demo_seeded_dismissed", "1");
+    setShowDemo(false);
+  };
 
   const handleLogout = () => {
     logout();
@@ -155,6 +164,23 @@ export default function Dashboard() {
             </Paragraph>
           </div>
 
+          {showDemo && (
+            <Alert
+              type="info"
+              showIcon
+              message="这是注册时自动生成的示例数据"
+              description="30 天示例记录用于展示产品结构，不是你的真实数据，也不会上传。从今天开始记录，用你自己的第一条替换它。"
+              action={
+                <Button size="small" onClick={() => navigate("/daily")}>
+                  开始记录
+                </Button>
+              }
+              closable
+              onClose={dismissDemo}
+              style={{ marginBottom: 20 }}
+            />
+          )}
+
           {/* 上方 3 个 summary 卡 */}
           <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
             <Col xs={24} sm={8}>
@@ -174,7 +200,7 @@ export default function Dashboard() {
                 <div style={{ fontSize: 36, fontWeight: 700, color: "#1677ff", lineHeight: 1, margin: "8px 0" }}>
                   {dashboard ? `${dashboard.active_modules_count}/12` : `0/12`}
                 </div>
-                <Text type="secondary">有数据即激活；11 子域已上线</Text>
+                <Text type="secondary">有数据即计入；部分子域仍在建设</Text>
               </Card>
             </Col>
             <Col xs={24} sm={8}>
@@ -201,7 +227,7 @@ export default function Dashboard() {
               icon={<BulbOutlined />}
               showIcon
               style={{ marginBottom: 24 }}
-              message="AI 教练建议"
+              message="今日建议"
               description={
                 <div style={{ marginTop: 8 }}>
                   {dashboard.ai_recommendations.map((rec, idx) => (
@@ -285,7 +311,7 @@ export default function Dashboard() {
       </Content>
 
       <Footer style={{ textAlign: "center", color: "#999" }}>
-        Life Planner v1.0 · 12 维度 · 12/11 子域已上线 · 陪你走过人生的每一步
+        Life Planner v1.0 · 12 维框架 · 部分子域建设中 · 陪你走过人生的每一步
       </Footer>
     </Layout>
   );

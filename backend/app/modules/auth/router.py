@@ -24,10 +24,13 @@ def register(payload: schemas.UserRegister, db: Session = Depends(get_db)):
     token = services.create_access_token({"sub": str(user.id)})
 
     # W35: Auto-inject 30-day sample data so dashboard 12 dimensions
-    # have meaningful values on day one.
+    # have meaningful values on day one. Tell the client so the UI can
+    # label the records as examples instead of presenting them as real.
+    demo_seeded = False
     try:
         from scripts.init_user_data import init_sample_data
         init_sample_data(db, int(user.id))
+        demo_seeded = True
     except Exception as e:
         # Don't fail registration on init error; log and continue.
         print(f"Warning: init_sample_data failed for user {user.id}: {e}")
@@ -38,6 +41,7 @@ def register(payload: schemas.UserRegister, db: Session = Depends(get_db)):
             "access_token": token,
             "token_type": "bearer",
             "user": schemas.UserResponse.model_validate(user).model_dump(),
+            "demo_seeded": demo_seeded,
         },
     )
 

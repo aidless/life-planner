@@ -24,6 +24,8 @@ export default function CollegeListPage() {
     }
   };
 
+  // Load once on mount; the filters are applied by the explicit search action.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchData(); }, []);
 
   const columns = [

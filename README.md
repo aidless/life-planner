@@ -3,6 +3,8 @@
 > AI 驱动的人生规划助手 — 覆盖学业、职业、考试、目标 4 大核心场景。
 > 基于 FastAPI + React 18 + TypeScript + Ant Design 5 + Claude API 构建。
 
+![Life Planner 落地页](docs/assets/landing.png)
+
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![React 18](https://img.shields.io/badge/react-18-61dafb.svg)](https://react.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
@@ -14,7 +16,9 @@
 - **6 大核心模块**：仪表盘 / 日常记录 / 考试分析 / 人生目标 / 学习规划 / 高考志愿 / 职业发展 / 研究生规划 / AI 教练对话
 - **108 个 API 路由 / 21 个功能模块**（2026-10 实测）：覆盖学业+职业+生活全流程
 - **AI 加持**：可选 Claude API 集成，提供智能分析与建议
-- **完整测试**：60 个自动化测试，my py 严格类型检查 0 错误
+- **完整测试**：60 个核心自动化测试；前端 lint / tsc / production build 已接入 CI
+- **公开入口**：`/` 是落地页，登录 / 注册不再套应用导航；注册后自动注入的示例数据会在仪表盘明确标注
+- **诚实状态**：健康 / 财务 / 习惯的前端仍在建设，仪表盘标「即将上线」且不显示分数；其余维度可进入
 - **开箱即用**：Docker Compose 一键启动
 
 ## 快速开始
@@ -24,8 +28,10 @@
 ```bash
 git clone https://github.com/aidless/life-planner.git
 cd life-planner
-docker compose -f deploy/docker-compose.yml up -d
+docker compose -f deploy/docker-compose.yml up -d --build
 ```
+
+默认使用容器内 SQLite（`backend_data` 卷），不需要外部数据库；核心功能不需要 Claude key。长期使用请设置 `SECRET_KEY`（生产 compose 会强制要求）；未设置时本地会自动生成临时密钥，容器重启后需要重新登录。
 
 访问：
 - 前端：http://localhost:5173
@@ -36,8 +42,9 @@ docker compose -f deploy/docker-compose.yml up -d
 **后端**：
 ```bash
 cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt -r requirements-dev.txt
+.venv/bin/uvicorn app.main:app --reload --port 8000
 ```
 
 **前端**（另开终端）：
@@ -51,6 +58,17 @@ npm run dev
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-..."
 ```
+
+没有 key 时，计划、记录、目标、仪表盘等核心功能照常工作；AI 教练与 AI 分析会返回明确的“未配置”错误，而不是假装成功。
+
+### 测试
+
+```bash
+# 从仓库根目录运行（B4 集成测试默认跳过）
+backend/.venv/bin/python -m pytest -q
+```
+
+当前：**60 passed, 18 skipped**。B4 的 18 项需要仓库外的私有 `trust-cap` 包和 8001 上的 live backend，设置 `B4_INTEGRATION=1` 后才运行。
 
 ## 功能模块
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Form, Input, Select, Button, Table, Tag, Spin } from 'antd';
+import { Card, Form, Input, Select, Button, Table, Tag } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { queryScores, CollegeScoreRecord } from '../services/api';
 

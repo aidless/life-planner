@@ -34,7 +34,6 @@ export default function ExamAnalyzer() {
   const [loading, setLoading] = useState(true);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [currentExamId, setCurrentExamId] = useState<number | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [diagnosis, setDiagnosis] = useState<DiagnosisReport | null>(null);
   const [msgApi, contextHolder] = message.useMessage();
@@ -53,6 +52,8 @@ export default function ExamAnalyzer() {
     }
   };
 
+  // Load once on mount; loadExams reads the current auth token and API state.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { loadExams(); }, []);
 
   // 创建考试记录 — fix: 后端是 POST /api/exams (ExamCreate schema)
@@ -69,7 +70,6 @@ export default function ExamAnalyzer() {
       });
       const newId = res.data?.data?.id;
       if (newId) {
-        setCurrentExamId(newId);
         setUploadModalOpen(false);
         msgApi.success("试卷记录已创建");
         await triggerAnalysis(newId, subject, examName, totalScore, userScore);

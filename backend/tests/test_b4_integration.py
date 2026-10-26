@@ -14,10 +14,17 @@ import json
 import random
 import tempfile
 import requests
+import pytest
 import sys
 
 BACKEND_URL = "http://localhost:8001"
 HTTP_TIMEOUT = 8  # seconds per request
+
+
+pytestmark = pytest.mark.skipif(
+    os.environ.get("B4_INTEGRATION") != "1",
+    reason="B4 integration requires a live backend on :8001 and the private trust-cap package; set B4_INTEGRATION=1 to run",
+)
 
 
 def http_get(url, **kw):

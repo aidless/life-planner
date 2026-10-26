@@ -57,7 +57,7 @@ export const DIMENSIONS: DimensionMeta[] = [
     color: "#1677ff",
     bgColor: "#e6f4ff",
     description: "高考志愿、大学规划、考研、求职、职场 — 贯穿学生到职场",
-    path: "/college-advisor",
+    path: "/career",
     status: "active",
     calculateHealth: (data) => {
       // 聚合：daily_tracker + exam_analyzer + life_planner + career + grad
@@ -132,7 +132,8 @@ export const DIMENSIONS: DimensionMeta[] = [
     color: "#fa8c16",
     bgColor: "#fff7e6",
     description: "心情、压力、能量 — 心理健康与学业表现直接相关",
-    status: "coming_soon",
+    path: "/psychology",
+    status: "active",
     calculateHealth: (data) => {
       const mood = data?.avg_mood ?? 5; // 1-10
       return Math.round(mood * 10);
@@ -148,7 +149,8 @@ export const DIMENSIONS: DimensionMeta[] = [
     color: "#eb2f96",
     bgColor: "#fff0f6",
     description: "家人关系、重要日期、亲情 — 家庭支持是人生韧性来源",
-    status: "coming_soon",
+    path: "/family",
+    status: "active",
     calculateHealth: (data) => {
       const connections = data?.connections_count ?? 0;
       return Math.min(100, connections * 15);
@@ -166,7 +168,8 @@ export const DIMENSIONS: DimensionMeta[] = [
     color: "#722ed1",
     bgColor: "#f9f0ff",
     description: "爱好、特长、激情 — 多元兴趣激发人生宽度",
-    status: "coming_soon",
+    path: "/interest",
+    status: "active",
     calculateHealth: (data) => {
       const hours = data?.weekly_hours ?? 0;
       return Math.min(100, hours * 5);
@@ -182,7 +185,8 @@ export const DIMENSIONS: DimensionMeta[] = [
     color: "#13c2c2",
     bgColor: "#e6fffb",
     description: "友谊、深度关系、社交网络 — 社交能力是领导力基础",
-    status: "coming_soon",
+    path: "/social",
+    status: "active",
     calculateHealth: (data) => {
       const close = data?.close_friends ?? 0;
       return Math.min(100, close * 20);
@@ -198,7 +202,8 @@ export const DIMENSIONS: DimensionMeta[] = [
     color: "#2f54eb",
     bgColor: "#f0f5ff",
     description: "读书、课程、技能 — 终身学习是 AI 时代核心能力",
-    status: "coming_soon",
+    path: "/learning",
+    status: "active",
     calculateHealth: (data) => {
       const books = data?.books_per_year ?? 0;
       const courses = data?.courses_count ?? 0;
@@ -215,7 +220,8 @@ export const DIMENSIONS: DimensionMeta[] = [
     color: "#52c41a",
     bgColor: "#f6ffed",
     description: "看世界、跨文化体验 — 旅行扩展认知边界",
-    status: "coming_soon",
+    path: "/travel",
+    status: "active",
     calculateHealth: (data) => {
       const trips = data?.trips_per_year ?? 0;
       return Math.min(100, trips * 25);
@@ -231,7 +237,8 @@ export const DIMENSIONS: DimensionMeta[] = [
     color: "#ff4d4f",
     bgColor: "#fff1f0",
     description: "爱情、深度关系 — 亲密关系是幸福感的核心来源",
-    status: "coming_soon",
+    path: "/intimacy",
+    status: "active",
     calculateHealth: (data) => {
       const satisfaction = data?.relationship_satisfaction ?? 5; // 1-10
       return Math.round(satisfaction * 10);
@@ -247,7 +254,8 @@ export const DIMENSIONS: DimensionMeta[] = [
     color: "#fadb14",
     bgColor: "#fffbe6",
     description: "价值观、人生使命 — 意义感是长期幸福的基石",
-    status: "coming_soon",
+    path: "/meaning",
+    status: "active",
     calculateHealth: (data) => {
       const clarity = data?.purpose_clarity ?? 5; // 1-10
       return Math.round(clarity * 10);

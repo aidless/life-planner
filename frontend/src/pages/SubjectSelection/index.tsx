@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Typography, Progress, Card, Button, Radio, Result, Table, Tag, Space, message } from "antd";
+import { Typography, Progress, Card, Button, Radio, Result, Table, Tag, Space } from "antd";
 import { ArrowLeftOutlined, CheckCircleOutlined } from "@ant-design/icons";
 
 const { Title, Paragraph, Text } = Typography;

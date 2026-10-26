@@ -8,7 +8,6 @@ import { Col, Row, Typography } from "antd";
 import {
   AUXILIARY_DIMENSIONS,
   CORE_DIMENSIONS,
-  DIMENSIONS,
 } from "@/config/dimensionConfig";
 import DimensionCard from "./DimensionCard";
 

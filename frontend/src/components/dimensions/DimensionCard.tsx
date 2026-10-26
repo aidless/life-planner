@@ -8,7 +8,6 @@ import { Card, Progress, Tag, Tooltip, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRightOutlined,
-  CheckCircleFilled,
   ClockCircleOutlined,
 } from "@ant-design/icons";
 import {
@@ -67,6 +66,8 @@ export default function DimensionCard({ meta, score }: Props) {
             display: "flex",
             alignItems: "center",
             gap: 10,
+            minWidth: 0,
+            flex: 1,
           }}
         >
           <div
@@ -84,17 +85,31 @@ export default function DimensionCard({ meta, score }: Props) {
           >
             {meta.icon}
           </div>
-          <div>
-            <Text strong style={{ fontSize: 16, display: "block" }}>
+          <div style={{ minWidth: 0 }}>
+            <Text strong style={{ fontSize: 16, display: "block", whiteSpace: "nowrap" }}>
               {meta.name}
             </Text>
-            <Text type="secondary" style={{ fontSize: 11 }}>
+            <Text
+              type="secondary"
+              style={{
+                fontSize: 11,
+                display: "block",
+                maxWidth: 120,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
               {meta.englishName}
             </Text>
           </div>
         </div>
         {isComing ? (
-          <Tag icon={<ClockCircleOutlined />} color="default">
+          <Tag
+            icon={<ClockCircleOutlined />}
+            color="default"
+            style={{ marginInlineEnd: 0, fontSize: 11, flexShrink: 0 }}
+          >
             即将上线
           </Tag>
         ) : (
@@ -104,7 +119,8 @@ export default function DimensionCard({ meta, score }: Props) {
         )}
       </div>
 
-      {/* Score progress */}
+      {/* Score progress — live dimensions only */}
+      {!isComing && (
       <div>
         <div
           style={{
@@ -119,7 +135,7 @@ export default function DimensionCard({ meta, score }: Props) {
           <Tooltip title={`等级：${level.label}`}>
             <Text
               strong
-              style={{ color: level.color, fontSize: 12 }}
+              style={{ color: level.color, fontSize: 12, whiteSpace: "nowrap" }}
             >
               {score} · {level.label}
             </Text>
@@ -132,6 +148,13 @@ export default function DimensionCard({ meta, score }: Props) {
           size="small"
         />
       </div>
+
+      )}
+      {isComing && (
+        <Text type="secondary" style={{ fontSize: 12 }}>
+          该维度仍在建设，暂不显示分数。
+        </Text>
+      )}
 
       {/* Description */}
       <Text
