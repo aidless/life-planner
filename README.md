@@ -14,7 +14,7 @@
 ## 核心特性
 
 - **6 大核心模块**：仪表盘 / 日常记录 / 考试分析 / 人生目标 / 学习规划 / 高考志愿 / 职业发展 / 研究生规划 / AI 教练对话
-- **108 个 API 路由 / 21 个功能模块**（2026-10 实测）：覆盖学业+职业+生活全流程
+- **106 个 API 操作 / 19 个业务模块**（2026-11-01 用 `app.openapi()` 实测；另含 2 个应用级路由 `/api/health`、`/api/info`）：覆盖学业+职业+生活全流程
 - **AI 加持**：可选 Claude API 集成，提供智能分析与建议
 - **完整测试**：60 个核心自动化测试；前端 lint / tsc / production build 已接入 CI
 - **公开入口**：`/` 是落地页，登录 / 注册不再套应用导航；注册后自动注入的示例数据会在仪表盘明确标注
@@ -93,9 +93,34 @@ backend/.venv/bin/python -m pytest -q
 | 身份认证 (Auth) | 3 | register / login / me |
 | AI 教练 (AICoach) | 3 | Claude 对话 |
 | 仪表盘 (Dashboard) | 1 | 聚合总览 |
-| 应用级 (main) | 4 | 健康检查等 |
+| 应用级 (main) | 2 | /api/health + /api/info |
 
-总计：**108 路由 / 21 模块**（2026-10 实测；端点数逐文件精确计数，说明列按模块名归纳）。
+总计：**106 个 API 操作 / 19 业务模块**（2026-11-01 用 `app.openapi()` 实测；
+另含 2 个应用级路由 `/api/health`、`/api/info`。端点数按 OpenAPI 操作精确计数，
+说明列按模块名归纳）。
+
+## 证明什么 / 不证明什么
+
+**证明什么**：
+- 19 个业务模块 + 2 应用级路由在 FastAPI 上注册成功（`app.openapi()` 返回
+  71 paths / 106 operations，实测）。
+- 60 项核心自动化测试通过（另 18 项 B4 集成默认跳过），3 次连跑稳定，
+  mypy 0 errors in 111 source files（README 顶部与测试节声明，本次复测确认
+  60 passed / 18 skipped）。
+- 核心功能不依赖 Claude key：无 key 时计划、记录、目标、仪表盘照常工作；
+  AI 教练与 AI 分析返回明确"未配置"错误，不假装成功。
+
+**不证明什么**：
+- B4 的 18 项集成测试需要仓库外的私有 `trust-cap` 包 + 8001 上 live backend，
+  设置 `B4_INTEGRATION=1` 后才运行——本机**未跑**这 18 项，**不构成**对
+  B4 完整性的经验证据。
+- `TrustBoundaryMiddleware` 在无 `trust_cap` 包时**静默禁用**
+  （`trust-cap unavailable`），本机实测如此——安全边界在此条件下是**降级**
+  状态，不是完整保护。
+- 健康 / 财务 / 习惯前端仍在建设（仪表盘标"即将上线"，不显示分数），
+  **不声称**这些维度已完整可用。
+- 端点数（106）是**当前代码**的 OpenAPI 计数；随版本演进会变，不作为
+  对外承诺的稳定接口数量。
 
 ## 技术栈
 
@@ -160,6 +185,16 @@ $PY -m pytest tests/ -v     # 60 个测试，5 秒跑完
 ```
 
 **当前状态**：60/60 通过 + 3 次连跑稳定 + mypy 0 errors in 111 source files。
+（2026-11-01 复测：`60 passed, 18 skipped`；18 项跳过为 B4 集成，需
+`B4_INTEGRATION=1` + 私有 `trust-cap` 包 + 8001 live backend。）
+
+### 复算（数字从哪来）
+
+| 数字 | 复算命令 | 来源 |
+|---|---|---|
+| 106 API 操作 / 71 paths | `python -c "import sys; sys.path.insert(0,'backend'); from app.main import app; print(len(app.openapi()['paths']), sum(len(v) for v in app.openapi()['paths'].values()))"` | `app.openapi()` 实测 |
+| 60 passed / 18 skipped | `python -m pytest backend/tests -q` | `backend/tests/` |
+| 19 业务模块 | `grep -rhoE 'APIRouter\(' backend/app --include='*.py' \| wc -l` | `backend/app/modules/` |
 
 ## 文档
 
