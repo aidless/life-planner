@@ -1,0 +1,16 @@
+{
+  "tool": "life-planner",
+  "method": "AST static analysis (stdlib ast), median of 20 reps",
+  "structure": {
+    "business_modules_apirouter": 19,
+    "test_files": 7,
+    "test_functions": 78
+  },
+  "timing": {
+    "full_parse_s": 0.140196,
+    "router_count_median_s": 0.090531,
+    "min_s": 0.064021,
+    "max_s": 0.111082
+  },
+  "note": "OpenAPI 106 ops / 71 paths 需完整依赖导入（README 复算节）；本基准以 AST 注册点为结构基线"
+}

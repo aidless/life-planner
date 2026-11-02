@@ -196,6 +196,24 @@ $PY -m pytest tests/ -v     # 60 个测试，5 秒跑完
 | 60 passed / 18 skipped | `python -m pytest backend/tests -q` | `backend/tests/` |
 | 19 业务模块 | `grep -rhoE 'APIRouter\(' backend/app --include='*.py' \| wc -l` | `backend/app/modules/` |
 
+**Fail-closed 声明（真实机制）**：
+AI 教练在无 `ANTHROPIC_API_KEY` 时**显式返回**"AI 分析服务未配置（缺少 ANTHROPIC_API_KEY）"（`backend/app/shared/ai_client.py:34-35`），**不假装成功**——这是 fail-closed 行为。但注意：`TrustBoundaryMiddleware` 在无 `trust_cap` 包时是**静默禁用**（`main.py:183` 仅 warning），那是**降级**状态，不是完整保护——两者不可混为一谈。
+
+### 结构基准（bench/results.json，2026-11-01 实测）
+
+```bash
+python3 bench/structure_bench.py
+```
+
+| 指标 | 实测值 |
+|---|---|
+| 业务模块（APIRouter 注册点） | 19 |
+| 测试文件 / 测试函数 | 7 / 78 |
+| 完整 AST 解析 | 0.140 s |
+| 模块计数（中位，20 次） | 0.091 s |
+
+这是**结构回归基线**（AST 静态分析，纯标准库）：19 模块、78 测试函数不应随无关改动漂移。OpenAPI 106 ops / 71 paths 需完整依赖导入（见上表复算节），本基准以 AST 注册点为结构口径。
+
 ## 文档
 
 - [docs/getting-started.md](./docs/getting-started.md) — 详细安装步骤
