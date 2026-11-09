@@ -1,5 +1,7 @@
 # Life Planner（人生规划助手）
 
+[![CI](https://github.com/aidless/life-planner/actions/workflows/ci.yml/badge.svg)](https://github.com/aidless/life-planner/actions/workflows/ci.yml)
+
 > AI 驱动的人生规划助手 — 覆盖学业、职业、考试、目标 4 大核心场景。
 > 基于 FastAPI + React 18 + TypeScript + Ant Design 5 + Claude API 构建。
 
