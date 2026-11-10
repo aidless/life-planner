@@ -37,7 +37,7 @@ httpx==0.26.0
 
 # Development
 pytest==7.4.4
-pytest-asyncio==0.23.3
+pytest-asyncio==1.4.1.post1
 # httpx==0.26.0  # Commented out - duplicate
 
 # Trust-boundary middleware uses PyJWT directly (separate from python-jose)
