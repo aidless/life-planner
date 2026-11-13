@@ -1,11 +1,15 @@
 # Life Planner（人生规划助手）
 
+[![CI](https://github.com/aidless/life-planner/actions/workflows/ci.yml/badge.svg)](https://github.com/aidless/life-planner/actions/workflows/ci.yml)
+
 > AI 驱动的人生规划助手 — 覆盖学业、职业、考试、目标 4 大核心场景。
 > 基于 FastAPI + React 18 + TypeScript + Ant Design 5 + Claude API 构建。
 
 ![Life Planner 落地页](docs/assets/landing.png)
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+
+> 🗂 **本仓是「人生规划」主题的主线仓**（FastAPI + React 全栈，4 大场景）。同主题姊妹仓：[lifeplanner](https://github.com/aidless/lifeplanner)（量化看板方向，实现完全不同、独立演进）。
 [![React 18](https://img.shields.io/badge/react-18-61dafb.svg)](https://react.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Tests: 60/60](https://img.shields.io/badge/tests-60%2F60-brightgreen.svg)](#测试)
