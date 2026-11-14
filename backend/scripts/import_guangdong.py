@@ -3,7 +3,6 @@
 重新导入广东2024/2025年数据
 """
 
-import json
 import re
 import asyncio
 import sys

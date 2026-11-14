@@ -1,6 +1,6 @@
 """Meaning module models — 价值观 + 人生使命."""
 
-from sqlalchemy import Column, String, Integer, ForeignKey, Float
+from sqlalchemy import Column, String, Integer, ForeignKey
 from app.shared.base_model import Base, TimestampMixin
 
 

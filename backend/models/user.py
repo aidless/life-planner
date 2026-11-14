@@ -4,9 +4,8 @@ User model for Life Planner application.
 Represents a user (high school student) with authentication and profile information.
 """
 
-from sqlalchemy import Column, String, Boolean, DateTime
+from sqlalchemy import Column, String, Boolean
 from sqlalchemy.orm import relationship
-from datetime import datetime
 from shared.base_model import BaseModel
 
 

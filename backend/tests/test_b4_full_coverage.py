@@ -8,7 +8,6 @@ Day 3 续 (选项 C): 把 7 表代表扩到全 35 表 endpoint coverage.
 
 import os
 import time
-import json
 import random
 import requests
 import pytest

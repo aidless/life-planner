@@ -1,9 +1,9 @@
 """Health module services."""
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-from sqlalchemy import select, func
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.modules.health.models import HealthLog, ExerciseRecord

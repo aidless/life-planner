@@ -1,13 +1,12 @@
 """Meaning module services."""
 
-from datetime import datetime
 from typing import Any, Dict, List
 
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
 from app.modules.meaning.models import Value, LifePurpose
-from app.modules.meaning.schemas import ValueCreate, ValueUpdate, PurposeUpdate
+from app.modules.meaning.schemas import ValueCreate, ValueUpdate
 
 
 def create_value(db: Session, user_id: int, data: ValueCreate) -> Value:

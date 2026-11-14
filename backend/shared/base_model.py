@@ -11,7 +11,6 @@ Provides:
 from sqlalchemy import Column, DateTime, Boolean, func, Integer
 from sqlalchemy.orm import declared_attr
 from datetime import datetime
-import uuid
 
 from database import Base
 

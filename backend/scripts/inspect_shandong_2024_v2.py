@@ -14,7 +14,7 @@ def inspect_xls(filepath):
     print(f"总列数: {len(df.columns)}")
     
     # 打印前20行，查看结构
-    print(f"\n前20行数据（所有列）:")
+    print("\n前20行数据（所有列）:")
     for idx in range(min(20, len(df))):
         row = df.iloc[idx]
         print(f"行 {idx}: {list(row)}")

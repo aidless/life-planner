@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.modules.learning.models import Book, Course
+from app.modules.learning.models import Book, Course, StudyTask
 from app.modules.learning.schemas import BookCreate, BookUpdate, CourseCreate, CourseUpdate
 
 
@@ -100,7 +100,6 @@ def get_stats(db: Session, user_id: int) -> Dict[str, Any]:
 
 def create_study_task(db: Session, user_id: int, data) -> "StudyTask":
     """Create a new study task for user."""
-    from datetime import datetime
     from app.modules.learning.models import StudyTask
     task = StudyTask(
         user_id=user_id,

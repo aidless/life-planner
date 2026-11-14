@@ -3,7 +3,6 @@ Try to download Guangdong 2024 admission PDFs.
 """
 import requests
 import re
-import os
 
 # Known URL patterns for Guangdong 2024
 test_urls = [

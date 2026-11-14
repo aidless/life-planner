@@ -3,7 +3,6 @@
 深入查找河北省教育考试院的投档数据
 """
 
-import json
 from playwright.sync_api import sync_playwright
 
 

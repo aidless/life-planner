@@ -8,12 +8,9 @@ This addresses W38-Reflections gap B: AI 能力浅 — coach chat 用空 prompt�
 """
 
 from __future__ import annotations
-import json
 from datetime import datetime, timedelta
-from typing import Optional
 from sqlalchemy.orm import Session
 
-from app.modules.daily_tracker.models import DailyLog
 
 
 def get_recent_daily_logs(db: Session, user_id: int, days: int = 7, limit: int = 10) -> list:

@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 # Add parent dir to path so we can import from app
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from database import SyncSessionLocal, Base, engine
+from database import SyncSessionLocal
 from models.college_score import CollegeScore
 from models.college_info import CollegeInfo
 

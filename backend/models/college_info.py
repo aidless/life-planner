@@ -4,7 +4,7 @@ CollegeInfo model for Life Planner application.
 Represents college/university basic information.
 """
 
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, String, DateTime
 from shared.base_model import BaseModel
 
 

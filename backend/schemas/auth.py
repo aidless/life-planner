@@ -9,8 +9,8 @@ This module defines Pydantic models for:
 - User response (user info without sensitive data)
 """
 
-from pydantic import BaseModel, Field, EmailStr, ConfigDict
-from typing import Optional, List
+from pydantic import BaseModel, Field, ConfigDict
+from typing import Optional
 from datetime import datetime
 
 

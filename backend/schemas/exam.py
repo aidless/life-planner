@@ -10,7 +10,7 @@ This module defines Pydantic models for:
 """
 
 from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional, List, Dict, Any
+from typing import List, Dict, Any
 from datetime import datetime
 
 

@@ -9,7 +9,6 @@ Configures periodic tasks for:
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from apscheduler.triggers.interval import IntervalTrigger
 import logging
 
 logger = logging.getLogger(__name__)
@@ -69,7 +68,6 @@ async def crawl_scores_job():
     logger.info("Starting annual college score crawling job")
     try:
         # Import here to avoid circular imports
-        from data_pipeline.crawlers.province_easy import crawl_shandong_scores
         # TODO: Implement actual crawling logic
         logger.info("College score crawling job completed")
     except Exception as e:

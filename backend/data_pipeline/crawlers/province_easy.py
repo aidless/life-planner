@@ -1,7 +1,6 @@
 import json
 import os
-from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Optional
 import logging
 import pandas as pd
 import requests
@@ -128,8 +127,8 @@ def _fetch_shandong_excel(year: int) -> str:
     
     # Known list page URLs to try (Shandong exam bureau)
     list_page_urls = [
-        f"https://www.sdzk.cn/NewsList.aspx?BCID=12&CID=47",  # 招考热点
-        f"https://www.sdzk.cn/NewsListM.aspx?BCID=2&CID=20",   # 夏季高考
+        "https://www.sdzk.cn/NewsList.aspx?BCID=12&CID=47",  # 招考热点
+        "https://www.sdzk.cn/NewsListM.aspx?BCID=2&CID=20",   # 夏季高考
     ]
     
     # Keywords to match in the link text

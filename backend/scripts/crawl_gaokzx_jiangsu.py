@@ -3,7 +3,6 @@
 从gaokzx.com爬取江苏2025年投档线数据
 """
 
-import json
 from playwright.sync_api import sync_playwright
 
 

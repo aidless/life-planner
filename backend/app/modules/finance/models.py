@@ -1,6 +1,6 @@
 """Finance module models."""
 
-from sqlalchemy import Column, String, Integer, Float, ForeignKey, Date
+from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from app.shared.base_model import Base, TimestampMixin
 
 

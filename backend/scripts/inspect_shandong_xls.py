@@ -13,9 +13,9 @@ def inspect_xls(filepath):
     
     print(f"总行数: {len(df)}")
     print(f"\n列名: {list(df.columns)}")
-    print(f"\n前5行数据:")
+    print("\n前5行数据:")
     print(df.head())
-    print(f"\n数据类型:")
+    print("\n数据类型:")
     print(df.dtypes)
 
 

@@ -1,7 +1,7 @@
 """Dashboard module services — 12 维度健康度聚合."""
 
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from datetime import datetime
+from typing import List
 
 from sqlalchemy.orm import Session
 

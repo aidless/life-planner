@@ -4,7 +4,7 @@ SubjectCombination model for Life Planner application.
 Represents the 12 possible subject combinations and their coverage rates.
 """
 
-from sqlalchemy import Column, Integer, String, Float, Text
+from sqlalchemy import Column, String, Float, Text
 from shared.base_model import BaseModel
 
 

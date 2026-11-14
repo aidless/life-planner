@@ -5,7 +5,6 @@ Update existing Guangdong data with subject_type from JSON files.
 
 import sqlite3
 import json
-from pathlib import Path
 
 DB_PATH = "F:/life-planner/backend/life_planner.db"
 PHYSICS_JSON = "F:/life-planner/backend/data/raw/scores/guangdong_2025_physics.json"

@@ -5,7 +5,7 @@ This module controls the migration process and database schema versioning.
 """
 
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import pool
 from sqlalchemy import create_engine
 from alembic import context
 import sys

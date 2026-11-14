@@ -3,7 +3,6 @@
 访问高考直通车2025年专业录取分数线页面
 """
 
-import json
 from playwright.sync_api import sync_playwright
 
 

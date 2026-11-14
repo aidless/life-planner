@@ -7,7 +7,7 @@ at the boundary where ORM objects cross into business logic functions.
 """
 
 from sqlalchemy.sql.schema import Column
-from typing import Any, TypeVar
+from typing import TypeVar
 
 T = TypeVar("T")
 

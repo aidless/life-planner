@@ -29,7 +29,7 @@ def parse_shandong_xls(filepath, year):
             break
     
     if header_row is None:
-        print(f"  未找到表头行")
+        print("  未找到表头行")
         return []
     
     print(f"  表头在第 {header_row + 1} 行")

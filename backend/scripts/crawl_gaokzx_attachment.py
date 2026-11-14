@@ -3,7 +3,6 @@
 从gaokzx.com查找并下载附件
 """
 
-import json
 import re
 from playwright.sync_api import sync_playwright
 

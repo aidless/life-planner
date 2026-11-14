@@ -9,7 +9,6 @@ Creates all initial tables for Life Planner application.
 
 from alembic import op
 import sqlalchemy as sa
-from datetime import datetime
 
 # revision identifiers
 revision = '001_init_tables'

@@ -10,9 +10,7 @@ B4 integration e2e tests (论文 §6 Case Study)
 
 import os
 import time
-import json
 import random
-import tempfile
 import requests
 import pytest
 import sys

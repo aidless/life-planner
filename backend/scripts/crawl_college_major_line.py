@@ -3,7 +3,6 @@
 访问高考直通车专业分数线查询页面
 """
 
-import json
 from playwright.sync_api import sync_playwright
 
 

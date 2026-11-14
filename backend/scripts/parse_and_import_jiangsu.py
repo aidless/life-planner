@@ -9,7 +9,7 @@ import asyncio
 import sys
 sys.path.append('F:/life-planner/backend')
 
-from database import AsyncSessionLocal, init_db, engine
+from database import AsyncSessionLocal, init_db
 from models.college_score import CollegeScore
 from sqlalchemy import select
 

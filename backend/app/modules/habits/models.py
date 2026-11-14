@@ -1,6 +1,6 @@
 """Habits module models."""
 
-from sqlalchemy import Column, String, Integer, ForeignKey, Date
+from sqlalchemy import Column, String, Integer, ForeignKey
 from app.shared.base_model import Base, TimestampMixin
 
 

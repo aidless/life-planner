@@ -3,7 +3,6 @@
 访问河北省普通高考信息服务平台
 """
 
-import json
 from playwright.sync_api import sync_playwright
 
 

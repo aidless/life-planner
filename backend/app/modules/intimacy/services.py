@@ -1,6 +1,6 @@
 """Intimacy module services."""
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List
 
 from sqlalchemy import select

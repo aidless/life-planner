@@ -7,15 +7,15 @@ Provides:
 - get_current_active_user: Current active user dependency
 """
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional, Any
+from typing import Optional
 import logging
 
 from config import settings
 from database import get_db
-from shared.exceptions import UnauthorizedException, ForbiddenException
+from shared.exceptions import UnauthorizedException
 
 logger = logging.getLogger(__name__)
 

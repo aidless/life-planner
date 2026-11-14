@@ -4,8 +4,6 @@
 使用Playwright浏览器自动化绕过JS渲染
 """
 
-import json
-import time
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
 
 

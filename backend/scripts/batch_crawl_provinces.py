@@ -56,7 +56,7 @@ def extract_pdf_links():
                     pdf_links[province_name] = pdf_url
                     print(f"找到PDF: {pdf_url}")
                 else:
-                    print(f"未找到PDF链接")
+                    print("未找到PDF链接")
                     
             except Exception as e:
                 print(f"访问 {province_name} 失败: {e}")

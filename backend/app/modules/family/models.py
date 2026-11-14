@@ -1,6 +1,6 @@
 """Family module models — 仅存公开信息（不存对话/隐私）。"""
 
-from sqlalchemy import Column, String, Integer, ForeignKey, Date
+from sqlalchemy import Column, String, Integer, ForeignKey
 from app.shared.base_model import Base, TimestampMixin
 
 

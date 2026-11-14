@@ -3,7 +3,6 @@
 尝试从河北省教育考试院爬取数据
 """
 
-import json
 from playwright.sync_api import sync_playwright
 
 

@@ -12,9 +12,9 @@ def inspect_xls(filepath):
     df = pd.read_excel(filepath, header=None)
     
     print(f"总行数: {len(df)}")
-    print(f"\n前10行数据:")
+    print("\n前10行数据:")
     print(df.head(10))
-    print(f"\n数据类型:")
+    print("\n数据类型:")
     print(df.dtypes)
 
 

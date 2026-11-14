@@ -13,8 +13,6 @@ B4 Trust Boundary middleware for FastAPI (R2.2 integration)
 from __future__ import annotations
 import os
 import sys
-import json
-import time
 from typing import Optional
 
 import jwt
@@ -25,8 +23,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 # 用 trust-cap 库
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../test/2026-07-16-11-16-52/capability/src"))
 from trust_cap import (
-    Capability, SigningKey, ReferenceMonitor, AuditChain, Action,
-    PermissionDenied,
+    Capability, SigningKey, ReferenceMonitor, AuditChain, PermissionDenied,
 )
 
 # === Config ===

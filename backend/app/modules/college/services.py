@@ -16,10 +16,9 @@ Endpoints (matched to old ``routers/college.py``):
 """
 
 import logging
-from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy import and_, asc, desc, or_, select
+from sqlalchemy import asc, desc, select
 from sqlalchemy.orm import Session
 
 from app.modules.college.models import CollegeInfo, CollegeRecommendation, CollegeScore, ProvinceRank

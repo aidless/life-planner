@@ -113,7 +113,7 @@ def main() -> int:
         return subprocess.call(cmd, stdin=None, stdout=None, stderr=None)
     except FileNotFoundError as e:
         print(f"[run_dev] FAILED: {e}", flush=True)
-        print(f"[run_dev] Is uvicorn installed? Try:", flush=True)
+        print("[run_dev] Is uvicorn installed? Try:", flush=True)
         print(f"  {sys.executable} -m pip install uvicorn[standard]", flush=True)
         return 1
     except KeyboardInterrupt:

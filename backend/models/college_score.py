@@ -4,7 +4,7 @@ CollegeScore model for Life Planner application.
 Represents college admission score data for different years/provinces/majors.
 """
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, Index
+from sqlalchemy import Column, Integer, String, Float, Index
 from shared.base_model import BaseModel
 
 

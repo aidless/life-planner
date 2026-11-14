@@ -3,7 +3,6 @@
 批量导入多省份PDF数据到数据库
 """
 
-import json
 import re
 import asyncio
 import sys

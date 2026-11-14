@@ -2,10 +2,9 @@ import asyncio
 import sys
 sys.path.insert(0, 'F:/life-planner/backend')
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from sqlalchemy import text
-from database import AsyncSessionLocal, engine
-from shared.base_model import Base
+from database import AsyncSessionLocal
 import uuid
 
 async def main():

@@ -3,8 +3,7 @@
 使用Playwright访问高考直通车，查找多省份历年投档数据
 """
 
-import json
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
+from playwright.sync_api import sync_playwright
 
 
 def crawl_from_gaokaozhitongche():
