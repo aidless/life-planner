@@ -1,6 +1,7 @@
 import { Card, Typography, Input, Button, Form, InputNumber, Select } from "antd";
 import { useState } from "react";
 import apiClient from "@/api/client";
+import AdviceNote from "@/components/AdviceNote";
 
 const { Title, Paragraph } = Typography;
 
@@ -24,7 +25,8 @@ export default function StudyPlanner() {
   return (
     <div>
       <Title level={3}>学习规划</Title>
-      <Paragraph type="secondary">AI 帮你制定科学高效的学习计划</Paragraph>
+      <AdviceNote />
+      <Paragraph type="secondary">可选的 Claude 调用。没有 key 时不会生成计划。输出不是学习效果或升学指导。</Paragraph>
       <Card style={{ maxWidth: 700 }}>
         <Form layout="vertical" onFinish={handleAnalyze}>
           <Form.Item name="level" label="学段">

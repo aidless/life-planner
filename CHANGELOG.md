@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — v1.0 路线图
 
+### Honesty
+- 0.9.0 小节里的测试条数、mypy「0 errors in 111 files」、CI 范围和「51k+ college_scores」是当时写下的说法，这次没有当成当前测量。当前计数在 README 的 honesty 块，由 `backend/tests/test_honesty_drift.py` 重算。
+- 本克隆没有提交 SQLite 数据库。启动不会导入 `data/raw` 里的分数线 JSON。
+
 ### Planned (优先级 P0 → P2)
 - 健康子域（health_logs + exercise_records + 步数睡眠 BMI）
 - 财务子域（transactions + budgets + goals）

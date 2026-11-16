@@ -1,7 +1,7 @@
 """
 CollegeRecommendation model for Life Planner application.
 
-Represents AI-generated college recommendation results (dash/steady/safe tiers).
+Represents stored college shortlists (dash/steady/safe). These rows are rank-band lookups, not model output.
 """
 
 from sqlalchemy import Column, Integer, Float, String, JSON, ForeignKey

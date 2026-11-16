@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Input, Select, Button, Table, Tag, message, Radio, Alert, Space, Progress, Tooltip } from 'antd';
+import { Card, Form, Input, Select, Button, Table, Tag, message, Radio, Alert, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { DownloadOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { predictColleges } from '../services/api';
 import { useAuthStore } from '../store/authStore';
 import apiClient from '@/api/client';
+import AdviceNote from '@/components/AdviceNote';
 
 interface PredictItem {
   college_id: string;
@@ -110,25 +111,21 @@ export default function PredictPage() {
     { title: '专业/专业组', dataIndex: 'major', width: 220, ellipsis: true },
     { title: '最低分', dataIndex: 'min_score', width: 90, render: (v: number | null) => v ?? '-' },
     { title: '位次', dataIndex: 'min_rank', width: 100, render: (v: number | null) => v?.toLocaleString() ?? '-' },
-    { title: '概率', dataIndex: 'probability', width: 80, render: (v: string) => {
+    { title: '档位', dataIndex: 'probability', width: 80, render: (v: string) => {
       const color = v === '冲刺' ? 'red' : v === '稳妥' ? 'orange' : 'green';
       return <Tag color={color}>{v}</Tag>;
     }},
-    { title: '置信度 · 来源', dataIndex: 'confidence', width: 200, render: (_: any, row: PredictItem) => {
+    { title: '来源', dataIndex: 'confidence', width: 220, render: (_: unknown, row: PredictItem) => {
       const conf = row.confidence ?? 0;
       const confPct = Math.round(conf * 100);
-      const color = conf >= 0.85 ? '#52c41a' : conf >= 0.75 ? '#faad14' : '#ff4d4f';
       return (
         <Space direction="vertical" size={2} style={{ width: '100%' }}>
-          <Tooltip title={`置信度 ${confPct}% （按 tier 设定，非真实回归）`}>
-            <Progress percent={confPct} size="small" strokeColor={color} showInfo format={(p) => `${p}%`} />
-          </Tooltip>
-          {row.data_source && (
-            <Tooltip title="每条推荐附数据来源标签，可点击去考试院官网核对">
-              <Tag style={{ fontSize: 10 }} icon={<InfoCircleOutlined />}>
-                {row.data_source}
-              </Tag>
-            </Tooltip>
+          <span style={{ fontSize: 12, color: '#8c8c8c' }}>档位常数 {confPct}，不是录取概率</span>
+          {row.year ? <Tag>{row.year}</Tag> : null}
+          {row.data_source ? (
+            <Tag style={{ fontSize: 10 }} icon={<InfoCircleOutlined />}>{row.data_source}</Tag>
+          ) : (
+            <Tag>无 source</Tag>
           )}
         </Space>
       );
@@ -171,7 +168,8 @@ export default function PredictPage() {
 
   return (
     <div>
-      <Card title="高考志愿预测" style={{ marginBottom: 24 }}>
+      <Card title="高考志愿查询" style={{ marginBottom: 24 }}>
+        <AdviceNote detail="短名单来自当前数据库的位次区间。新鲜克隆的库是空的。年份只有 2024 和 2025 两个选项，对应仓库里的快照标签，不是已经复核过的考试院发布日期。档位常数不是录取概率。" />
         {!isLoggedIn && (
           <Alert
             message="未登录"
@@ -192,7 +190,7 @@ export default function PredictPage() {
           <Form.Item name="score" label="高考分数" rules={[{ required: true, message: '请输入分数' }]}>
             <Input type="number" placeholder="如：600" style={{ width: 200 }} />
           </Form.Item>
-          <Form.Item name="rank" label="位次（强烈建议填写，提高预测准确度）">
+          <Form.Item name="rank" label="位次（可选）。不填则用分数表反查；没有行就不会编一个位次">
             <Input type="number" placeholder="如：20000" style={{ width: 200 }} />
           </Form.Item>
           <Form.Item name="province" label="省份" rules={[{ required: true, message: '请选择省份' }]}>

@@ -1,7 +1,6 @@
 /**
- * Dashboard v2 — 12 维度人生仪表盘（接入真实数据）
- *
- * 数据来源：/api/dashboard 聚合 12 维度 + milestones + AI recommendations
+ * Dashboard — 12 维度格子。健康 / 财务 / 习惯没有页面。
+ * 平均分只算已开放维度。注册示例由横幅标明。
  */
 
 import { useEffect, useState } from "react";
@@ -15,6 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import apiClient from "@/api/client";
+import AdviceNote from "@/components/AdviceNote";
 import DimensionsGrid from "@/components/dimensions/DimensionsGrid";
 import FiveYearOverview from "@/components/dimensions/FiveYearOverview";
 import LoadingState from "@/components/LoadingState";
@@ -112,9 +112,18 @@ export default function Dashboard() {
   const scoresFromApi = dashboard
     ? Object.fromEntries(dashboard.dimensions.map((d) => [d.key, d.score]))
     : {};
+  const openDims = DIMENSIONS.filter((d) => d.status === "active");
+  const openScores = openDims.map((d) => scoresFromApi[d.key] ?? 0);
+  const openAverage = openScores.length
+    ? Math.round(openScores.reduce((sum, score) => sum + score, 0) / openScores.length)
+    : 0;
+  const openWithData = openDims.filter((d) => (scoresFromApi[d.key] ?? 0) > 0).length;
 
-  const overallLevel = getHealthLevel(dashboard?.average_score || 0);
-  const lowDims = dashboard ? [...dashboard.dimensions].sort((a, b) => a.score - b.score).slice(0, 1) : [];
+  const overallLevel = getHealthLevel(openAverage);
+  const lowDims = openDims
+    .map((d) => ({ name: d.name, score: scoresFromApi[d.key] ?? 0 }))
+    .sort((a, b) => a.score - b.score)
+    .slice(0, 1);
 
   return (
     <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
@@ -185,12 +194,12 @@ export default function Dashboard() {
           <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
             <Col xs={24} sm={8}>
               <Card style={{ borderRadius: 12, background: overallLevel.bgColor }}>
-                <Text type="secondary" style={{ fontSize: 12 }}>12 维度综合健康度</Text>
+                <Text type="secondary" style={{ fontSize: 12 }}>已开放维度平均</Text>
                 <div style={{ fontSize: 36, fontWeight: 700, color: overallLevel.color, lineHeight: 1, margin: "8px 0" }}>
-                  {dashboard?.average_score || 0}
+                  {openAverage}
                 </div>
                 <Text style={{ color: overallLevel.color }}>
-                  {dashboard?.average_level || overallLevel.label} · 12 维度平均
+                  {overallLevel.label} · 不含即将上线的健康 / 财务 / 习惯
                 </Text>
               </Card>
             </Col>
@@ -198,9 +207,9 @@ export default function Dashboard() {
               <Card style={{ borderRadius: 12 }}>
                 <Text type="secondary" style={{ fontSize: 12 }}>已激活维度</Text>
                 <div style={{ fontSize: 36, fontWeight: 700, color: "#1677ff", lineHeight: 1, margin: "8px 0" }}>
-                  {dashboard ? `${dashboard.active_modules_count}/12` : `0/12`}
+                  {dashboard ? `${openWithData}/${openDims.length}` : `0/${openDims.length}`}
                 </div>
-                <Text type="secondary">有数据即计入；部分子域仍在建设</Text>
+                <Text type="secondary">只数已开放、且分数大于 0 的维度</Text>
               </Card>
             </Col>
             <Col xs={24} sm={8}>
@@ -211,7 +220,7 @@ export default function Dashboard() {
                     <div style={{ fontSize: 18, fontWeight: 600, color: "#f5222d", margin: "8px 0" }}>
                       {lowDims[0].name} · {lowDims[0].score}
                     </div>
-                    <Text type="secondary">{lowDims[0].level} · 点击下方卡片开始记录</Text>
+                    <Text type="secondary">{getHealthLevel(lowDims[0].score).label} · 打开下面已有的页面</Text>
                   </>
                 ) : (
                   <Text type="secondary">—</Text>
@@ -227,9 +236,12 @@ export default function Dashboard() {
               icon={<BulbOutlined />}
               showIcon
               style={{ marginBottom: 24 }}
-              message="今日建议"
+              message="固定模板，不是模型建议"
               description={
                 <div style={{ marginTop: 8 }}>
+                  <div style={{ marginBottom: 8 }}>
+                    按最低的几个维度挑一句写死的话。不是医疗、财务或招生指导。
+                  </div>
                   {dashboard.ai_recommendations.map((rec, idx) => (
                     <div
                       key={idx}
@@ -288,10 +300,10 @@ export default function Dashboard() {
             <FiveYearOverview />
           </div>
 
-          {/* 12 维度模块入口（active 11 个） */}
-          <Card title="🌟 进入 12 维度模块" style={{ borderRadius: 12 }}>
+          <Card title="进入已开放的页面" style={{ borderRadius: 12 }}>
+            <AdviceNote detail="健康、财务、习惯没有页面。下面不给它们入口，也不显示分数。" />
             <Row gutter={[16, 16]}>
-              {DIMENSIONS.filter((d) => d.status === "coming_soon" && d.path).map((d) => (
+              {openDims.filter((d) => d.path).map((d) => (
                 <Col xs={12} sm={8} md={6} key={d.key}>
                   <Card hoverable size="small" onClick={() => navigate(d.path!)} style={{ borderColor: d.color }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -299,7 +311,7 @@ export default function Dashboard() {
                       <Text strong>{d.name}</Text>
                     </div>
                     <div style={{ marginTop: 8, fontSize: 12, color: "#999" }}>
-                      健康度：{scoresFromApi[d.key] ?? 0}
+                      打开
                       <ArrowRightOutlined style={{ marginLeft: 6 }} />
                     </div>
                   </Card>

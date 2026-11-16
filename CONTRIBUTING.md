@@ -52,25 +52,22 @@
 
 ### 测试要求
 
-**所有 PR 必须包含测试**：
-- 后端：pytest 用例放在 `backend/tests/`
-- 覆盖率：新代码行覆盖率 ≥ 80%
+**测试**：
+- 后端用例放在 `backend/tests/`
+- CI 不统计行覆盖率。不要把「≥ 80%」写成已经测得的数字。
 
 ### 提交前检查清单
 
 ```bash
-# 后端
-cd backend
-$PY -m pytest tests/ -v        # 必须 60/60 通过
-$PY -m mypy --config-file ../pyproject.toml backend  # 必须 0 errors
-
-# 前端
-cd frontend
-npm run lint                   # 必须 0 错误
-npm run build                  # 必须构建成功
+python3 -m venv .venv
+.venv/bin/pip install -r backend/requirements-dev.txt
+cd frontend && npm install && cd ..
+make check
 ```
 
-CI 会自动跑这些检查，未通过的 PR 不会被合并。
+`make check` 跑 pytest（不使用 Claude key）、mypy（只覆盖 `backend/app`）、前端 lint、`tsc --noEmit` 和生产构建。通过与否看命令退出码。README 的 honesty 块记录 pytest 和 OpenAPI 计数，由 `backend/tests/test_honesty_drift.py` 重算。不要把某一次的通过条数写进徽章。
+
+`ci.yml` 跑同样的 Makefile 目标。`pr-checks.yml` 只做语法编译。
 
 ## 项目架构
 

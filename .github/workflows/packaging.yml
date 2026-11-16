@@ -16,11 +16,12 @@ jobs:
       - name: Build distributions
         run: |
           set -euo pipefail
-          python -m pip install --quiet build
-          if ls pyproject.toml setup.py setup.cfg >/dev/null 2>&1; then
+          # A pyproject.toml that only holds tool config is not a package.
+          if python -c 'import pathlib,sys,tomllib; d=tomllib.loads(pathlib.Path("pyproject.toml").read_text()); sys.exit(0 if ("build-system" in d or "project" in d) else 1)'; then
+            python -m pip install --quiet build
             python -m build --sdist --wheel --outdir dist/
           else
-            echo "no python packaging metadata; skipping"
+            echo "pyproject.toml has no [project] or [build-system]; not a distributable package. skipping build"
           fi
       - name: Upload dist artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

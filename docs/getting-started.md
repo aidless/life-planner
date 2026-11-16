@@ -1,6 +1,6 @@
-# Getting Started — 5 分钟启动 Life Planner
+# Getting Started
 
-本指南帮助你在本地启动 Life Planner，包括后端 + 前端 + 数据库。
+本地启动后端和前端。这不是生产部署，也不导入高考分数线。核对命令是仓库根目录的 `make check`（见 README）。
 
 ## 前置要求
 
@@ -12,36 +12,21 @@
 | Git | 2.30+ | `git --version` |
 | Docker (可选) | 20+ | `docker --version` |
 
-## 方式一：Docker Compose（推荐）
+## 方式一：Docker Compose
 
-最快方式，5 分钟启动完整服务。
-
-### 1. 克隆仓库
+`deploy/docker-compose.yml` 定义两个服务，使用容器内 SQLite，不包含 PostgreSQL，也没有单独的 nginx 服务（nginx 在 frontend 镜像里）。第一次需要构建：
 
 ```bash
 git clone https://github.com/aidless/life-planner.git
 cd life-planner
+docker compose -f deploy/docker-compose.yml up -d --build
 ```
 
-### 2. 启动服务
-
-```bash
-docker compose -f deploy/docker-compose.yml up -d
-```
-
-这会启动：
-- `backend` — FastAPI 后端（端口 8765）
-- `frontend` — React 前端（端口 5173）
-- `db` — PostgreSQL（端口 5432）
-- `nginx` — 反向代理（端口 80/443）
-
-### 3. 访问
-
+文件里写的端口是：
 - 前端：http://localhost:5173
-- API 文档：http://localhost:8765/docs
-- 健康检查：http://localhost:8765/api/health
+- API：http://localhost:8000 （文档在 `/docs`，健康检查在 `/api/health`）
 
-### 4. 停止
+本次审核环境没有 Docker，没有执行这条命令。未设置 `SECRET_KEY` 时后端使用进程内临时密钥。停止：
 
 ```bash
 docker compose -f deploy/docker-compose.yml down

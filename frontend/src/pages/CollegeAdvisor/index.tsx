@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Typography, Card, Form, Input, Select, Button, Tag, Result, Spin, message } from "antd";
 import { ArrowLeftOutlined, SolutionOutlined, BankOutlined } from "@ant-design/icons";
 import apiClient from "@/api/client";
+import AdviceNote from "@/components/AdviceNote";
 
 const { Paragraph, Text } = Typography;
 const { Option } = Select;
@@ -57,16 +58,20 @@ export default function CollegeAdvisor() {
         year: 2025,
       });
       const data = res.data?.data || {};
-      // 适配真后端字段（dash / steady / safe）→ 前端字段（reach / match / safe）
+      const listed = (data.dash?.length || 0) + (data.steady?.length || 0) + (data.safe?.length || 0);
+      const rankNote = data.rank_status === "no_data"
+        ? "分数表没有对应位次，结果是空的，没有填占位位次。"
+        : data.rank_status === "from_province_ranks"
+          ? `位次来自分数表反查：${data.user_rank}。`
+          : data.user_rank
+            ? `使用填写的位次：${data.user_rank}。`
+            : "";
       setResult({
         reach: data.dash || [],
         match: data.steady || [],
         safe: data.safe || [],
-        summary: `基于你的分数 ${values.score}（${values.province}），AI 已从 ${data.dash?.length || 0 + data.steady?.length || 0 + data.safe?.length || 0} 所大学中筛选出三档推荐。`,
+        summary: `按位次区间从数据库取出 ${listed} 条，不是模型筛选。请求里的年份是 2025。${rankNote}`,
       });
-      if (data.user_rank) {
-        msgApi.info(`你的位次预估：${data.user_rank.toLocaleString()}`);
-      }
     } catch (err: any) {
       const detail = err.response?.data?.detail || "推荐失败";
       msgApi.error(`推荐失败：${detail}`);
@@ -131,9 +136,10 @@ export default function CollegeAdvisor() {
         <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => setResult(null)} style={{ marginBottom: 16, paddingLeft: 0 }}>
           重新填报
         </Button>
+        <AdviceNote detail="下面是数据库里的位次区间短名单，不是招生录取建议。新鲜数据库是空的。source 和年份来自行内字段，这里没有对照考试院复核。" />
         <Result
           icon={<SolutionOutlined style={{ color: "#1677ff" }} />}
-          title="🎓 志愿填报推荐报告"
+          title="志愿短名单"
           subTitle={result.summary}
         />
         <Card title="🚀 冲刺档（建议 1-2 所）" style={{ marginBottom: 24, borderRadius: 12, borderColor: "#ff4d4f" }}>
@@ -163,10 +169,11 @@ export default function CollegeAdvisor() {
         返回首页
       </Button>
       <Card title={<span><BankOutlined /> 志愿填报</span>} style={{ borderRadius: 12 }}>
+        <AdviceNote detail="提交后请求固定带 year=2025。后端按位次区间查库，每次最多 5+5+5 条。没有分数表行时列表是空的。这不是招生录取建议。" />
         <Paragraph type="secondary" style={{ marginBottom: 24 }}>
-          输入你的高考分数、省份和选科组合，AI 将基于真实大学数据为你推荐冲刺、稳妥、保底三档院校。
+          填写分数、省份和选科。结果来自当前数据库里的分数行，不是模型，也不是「真实大学数据」的保证。
         </Paragraph>
-        <Spin spinning={loading} tip="AI 推荐中...">
+        <Spin spinning={loading} tip="查询中...">
           <Form form={form} layout="vertical" onFinish={handleSubmit}>
             <Form.Item name="score" label="高考分数" rules={[{ required: true, message: "请输入分数" }]}>
               <Input type="number" placeholder="如：650" style={{ width: 200 }} />

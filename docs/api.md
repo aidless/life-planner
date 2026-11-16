@@ -1,4 +1,8 @@
-# API Reference — 34 端点
+# API Reference
+
+这份文档是早期的部分说明，不是当前的操作计数。当前 OpenAPI 的 path / operation 数量写在 README 的 honesty 块里，并由 `backend/tests/test_honesty_drift.py` 重算。下面的章节没有逐条跟上后来加上的模块。
+
+# 早期摘录 — 曾经写成 34 端点
 
 所有端点使用统一响应格式：
 

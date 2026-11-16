@@ -13,6 +13,7 @@ import {
 } from "antd";
 import { SmileOutlined, BulbOutlined, HeartOutlined } from "@ant-design/icons";
 import apiClient from "@/api/client";
+import AdviceNote from "@/components/AdviceNote";
 import LoadingState from "@/components/LoadingState";
 
 const { Title, Text, Paragraph } = Typography;
@@ -108,6 +109,7 @@ export default function Psychology() {
 
   return (
     <div style={{ padding: 24, maxWidth: 1200, margin: "0 auto" }}>
+      <AdviceNote detail="这里只保存你自己填的心情、能量和压力。它不是心理咨询或医疗诊断，也不说明这些分数和学业有因果关系。" />
       {error && (
         <Alert
           type="error"
@@ -126,7 +128,7 @@ export default function Psychology() {
             <SmileOutlined style={{ color: "#fa8c16", marginRight: 12 }} />
             心理 · Psychology
           </Title>
-          <Text type="secondary">心情、能量、压力 — 心理健康与学业表现直接相关</Text>
+          <Text type="secondary">心情、能量、压力的自我记录。这不是心理咨询或医疗建议。</Text>
         </Col>
       </Row>
 

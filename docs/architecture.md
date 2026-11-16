@@ -129,9 +129,7 @@ W26 修复后，`app/main.py` 启动时同时调用两个 `metadata.create_all` 
 
 ## 测试架构
 
-- **pytest** — 60 个测试，5 秒跑完
-- **mypy** — 严格类型检查，0 errors in 111 source files
-- **GitHub Actions** — 自动跑 mypy + pytest + flake8
+计数和 CI 范围以 README 的 honesty 块和 `make check` 为准。不要引用已经删掉的静态徽章。`ci.yml` 跑 `make check-backend`（pytest + mypy `backend/app`）和 `make check-frontend`。它不跑 flake8。
 
 测试文件：
 - `test_smoke.py` — 11 个基础测试

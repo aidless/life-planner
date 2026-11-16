@@ -1,13 +1,19 @@
 """Claude API client for AI-powered analysis and recommendations."""
 
 import json
-from typing import Optional
+from typing import Literal, Optional, overload
 
 from anthropic import Anthropic
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.shared.context import build_user_summary, inject_user_context
+
+
+_NOT_ADVICE = (
+    "回答须说明：这是未经验证的演示，不是医疗、财务、心理咨询或招生录取建议，"
+    "不要声称录取概率、官方资格或把握。"
+)
 
 
 class AIClient:
@@ -48,8 +54,9 @@ class AIClient:
     async def analyze_daily_log(self, activities: list[dict]) -> str:
         """Analyze daily activities and provide feedback."""
         system_prompt = (
-            "你是一位专业的人生规划教练。分析用户的日常活动记录，"
-            "给出建设性反馈和改进建议。用中文回复，保持积极鼓励的语气。"
+            "你是一位人生规划演示助手。分析用户的日常活动记录，"
+            "给出建设性反馈。用中文回复。"
+            + _NOT_ADVICE
         )
         user_message = (
             "以下是我今天的活动记录，请分析:\n"
@@ -62,14 +69,39 @@ class AIClient:
     ) -> str:
         """Analyze exam results and provide study recommendations."""
         system_prompt = (
-            "你是一位经验丰富的教育分析师。分析学生的考试表现，"
-            "识别知识薄弱点，给出针对性的学习建议。用中文回复。"
+            "你是一位考试记录演示助手。分析学生的考试表现，"
+            "指出可能的薄弱点。用中文回复。"
+            + _NOT_ADVICE
         )
         user_message = (
             f"考试信息:\n{json.dumps(exam_info, ensure_ascii=False, indent=2)}\n\n"
             f"错题分析:\n{json.dumps(questions, ensure_ascii=False, indent=2)}"
         )
         return await self.analyze(system_prompt, user_message, max_tokens=2048)
+
+    @overload
+    async def chat(
+        self,
+        module: str,
+        context: str,
+        question: str,
+        *,
+        db: Optional[Session] = None,
+        user_id: Optional[int] = None,
+        return_prompt: Literal[False] = False,
+    ) -> str: ...
+
+    @overload
+    async def chat(
+        self,
+        module: str,
+        context: str,
+        question: str,
+        *,
+        db: Optional[Session] = None,
+        user_id: Optional[int] = None,
+        return_prompt: Literal[True],
+    ) -> tuple[str, str]: ...
 
     async def chat(
         self,
@@ -80,7 +112,7 @@ class AIClient:
         db: Optional[Session] = None,
         user_id: Optional[int] = None,
         return_prompt: bool = False,
-    ) -> str:
+    ) -> str | tuple[str, str]:
         """General AI chat for any module.
 
         Added fix C: when db + user_id provided, automatically injects
@@ -100,7 +132,7 @@ class AIClient:
             "life": "你是人生规划教练，帮助设定和实现人生目标。",
             "general": "你是全能型AI助手，帮助用户解决人生各阶段的问题。",
         }
-        system_prompt = prompts.get(module, prompts["general"])
+        system_prompt = prompts.get(module, prompts["general"]) + _NOT_ADVICE
 
         # Inject user context if available (fix C)
         user_summary_text = ""

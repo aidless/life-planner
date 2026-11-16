@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# AUTHOR_PATH: F:/life-planner and F:\\life-planner below are the original author's Windows checkout.
+# git clone, Docker Compose, and make check do not create that directory.
 """
 解析江苏省2025年普通高校招生普通类本科批次平行志愿投档线PDF
 """

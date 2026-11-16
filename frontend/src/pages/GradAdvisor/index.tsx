@@ -1,6 +1,7 @@
 import { Card, Typography, Input, Button, Form, Select } from "antd";
 import { useState } from "react";
 import apiClient from "@/api/client";
+import AdviceNote from "@/components/AdviceNote";
 
 const { Title, Paragraph } = Typography;
 
@@ -24,7 +25,8 @@ export default function GradAdvisor() {
   return (
     <div>
       <Title level={3}>研究生规划</Title>
-      <Paragraph type="secondary">研究方向选择、学校申请、导师选择的 AI 指导</Paragraph>
+      <AdviceNote detail="可选的 Claude 调用。没有 key 时不会生成内容。输出不是招生、导师录取或研究方向的官方指导。" />
+      <Paragraph type="secondary">把表单内容发给模型。返回的文字没有经过录取结果验证。</Paragraph>
       <Card style={{ maxWidth: 700 }}>
         <Form layout="vertical" onFinish={handleAnalyze}>
           <Form.Item name="degree" label="目标学位">

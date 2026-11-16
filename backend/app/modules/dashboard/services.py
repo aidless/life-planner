@@ -267,7 +267,7 @@ def build_dashboard(user_id: int, db: Session) -> DashboardResponse:
 
     milestones.sort(key=lambda m: m.days_until)
 
-    # AI 推荐（基于最低 2 个维度）
+    # Fixed templates for the lowest scores. Not a model call.
     sorted_dims = sorted(dimensions, key=lambda d: d.score)
     recommendations: List[AIRecommendation] = []
     for d in sorted_dims[:3]:

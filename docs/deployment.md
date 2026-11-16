@@ -50,6 +50,8 @@ docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up
 
 ### 5. 配置 Nginx + SSL
 
+这段宿主 nginx 没有在本次审核里执行。开发 compose 把 API 放在宿主 `8000`，frontend 在 `5173`。生产 compose 只发布 frontend 的 `80`，backend 端口不映射到宿主；`/api/` 由 frontend 镜像里的 nginx 转到 compose 网络中的 `backend:8000`。不要把 API 指到 `8765`。
+
 ```nginx
 # /etc/nginx/sites-available/life-planner
 server {
@@ -73,7 +75,7 @@ server {
 
     # API
     location /api/ {
-        proxy_pass http://localhost:8765;
+        proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
@@ -133,13 +135,9 @@ Railway 提供 PostgreSQL 插件，直接添加即可。
 
 参考 `deploy/k8s/`（未来提供）。
 
-## GitHub Actions 自动部署
+## GitHub Actions
 
-`.github/workflows/ci.yml` 已配置：
-
-- **PR**：自动跑 mypy + pytest + flake8
-- **main 分支 push**：构建 Docker 镜像推送到 GitHub Container Registry
-- **手动触发**：部署到测试 / 生产
+`.github/workflows/ci.yml` 做字节编译、Markdown 链接、gitleaks、`make check-backend` 和 `make check-frontend`。它不构建镜像，不推送 GHCR，也不部署。仓库里没有已验证的生产发布流水线。Compose 文件的行为见 README，本次审核没有启动容器。
 
 ## 监控
 
