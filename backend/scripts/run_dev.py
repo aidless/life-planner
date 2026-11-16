@@ -4,6 +4,7 @@ Quick-start dev server for life-planner.
 Usage:
     python scripts/run_dev.py
     python scripts/run_dev.py --port 8765
+    # 8765 is only this script's default. README and deploy/docker-compose.yml use 8000.
     python scripts/run_dev.py --no-reload
 
 What it does:

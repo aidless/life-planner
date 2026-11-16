@@ -7,23 +7,23 @@
 
 ## 0. 一句话假设（先读这行）
 
-> life-planner 是一个 FastAPI + React 全栈人生规划系统：**19 个业务模块（APIRouter 注册点）、78 个测试函数**（60 核心 + 18 B4 集成）、核心功能不依赖 Claude key；AI 教练在无 key 时**显式返回"未配置"而非假装成功**（fail-closed）。
+> life-planner 是一个 FastAPI + React 全栈演示。模块数、OpenAPI 操作数和默认 pytest 的 passed/skipped 以 README 的 honesty 块为准，由 `backend/tests/test_honesty_drift.py` 重算。无 Claude key 时 AI 教练返回固定的「未配置」字符串。
 
 ---
 
 ## 1. 主假设 H1（业务模块注册结构）
 
-- **假设**：后端注册 19 个业务模块（`APIRouter(...)` 调用点 = 19），对应 19 个 `router.py`。
-- **可证伪方向**：若 `APIRouter` 注册点数 ≠ 19，或模块数 ≠ 19，则 H1 不成立。
-- **评测方案**：AST 静态分析统计 `backend/app` 下所有 `APIRouter` 调用（`bench/structure_bench.py`）。
-- **成功标准**：19 模块 / 19 router 文件；另 20 个模块目录（其中若干模块共享 router）。
+- **假设**：`backend/app/modules/*/router.py` 的个数等于 README honesty 块的 `backend_modules`。
+- **可证伪方向**：漂移测试失败。
+- **评测方案**：`backend/tests/test_honesty_drift.py`。
+- **成功标准**：该测试通过。不要另写一个手抄的模块数。
 
 ## 2. 假设 H2（测试套件结构）
 
-- **假设**：78 个测试函数（7 个测试文件）；其中 60 核心通过、18 B4 集成默认跳过。
-- **可证伪方向**：若 AST 统计的测试函数数 ≠ 78，则 H2 不成立（核心/B4 划分以 pytest 标记为准）。
-- **评测方案**：`bench/structure_bench.py` AST 计数 + `python -m pytest backend/tests -q`。
-- **成功标准**：`test_functions == 78`（AST），核心 60 passed（需完整依赖）。
+- **假设**：默认 pytest（无 `ANTHROPIC_API_KEY`、无 `B4_INTEGRATION`）的 passed 与 skipped 等于 README honesty 块。
+- **可证伪方向**：漂移测试失败。
+- **评测方案**：`backend/tests/test_honesty_drift.py` 起一个子进程跑 pytest 并解析汇总行。
+- **成功标准**：该测试通过。跳过的部分是 B4，不是核心功能已经测过。
 
 ## 3. 假设 H3（AI 教练 fail-closed）
 
@@ -48,7 +48,7 @@
 | B4 集成测试完整性 | 18 项 B4 集成**未跑** | 需仓库外私有 `trust-cap` 包 + 8001 live backend + `B4_INTEGRATION=1` |
 | TrustBoundaryMiddleware 完整保护 | 无 `trust_cap` 包时**静默禁用**（降级） | `main.py:183` 捕获 ImportError 后仅 warning，**不是完整保护** |
 | 健康/财务/习惯前端 | 这些维度已完整可用 | 前端仍在建设，仪表盘标「即将上线」，不显示分数 |
-| API 稳定性 | 106 ops 是稳定接口数 | 是当前代码 OpenAPI 计数，随版本演进会变 |
+| API 稳定性 | honesty 块里的 operation 数是稳定对外承诺 | 它是当前 `app.openapi()` 的计数，变了就要改 README，否则漂移测试失败 |
 | 性能（HTTP 延迟） | 端到端请求延迟 | 本基准只测 AST 结构解析，不含真实 HTTP 往返（需完整依赖） |
 
 ---

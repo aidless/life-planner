@@ -64,7 +64,7 @@ export default function Landing() {
             <article>
               <span className="landing-feature-index">01</span>
               <h3>看见全景</h3>
-              <p>12 个维度：学业、职业、健康、财务、习惯、心理、家庭、兴趣、社交、学习、旅行、亲密与意义。分数只是入口，不是结论。</p>
+              <p>仪表盘列了 12 个维度。健康、财务、习惯仍标着「即将上线」，没有页面。其余维度可以进入。分数不是结论。</p>
             </article>
             <article>
               <span className="landing-feature-index">02</span>
@@ -86,7 +86,7 @@ export default function Landing() {
               <li><strong>账号数据库</strong>：默认 SQLite，数据在你的部署实例内；Docker 用独立卷持久化。</li>
               <li><strong>AI 可选</strong>：不配置 key 时不会调用任何模型；配置后只把当前对话发给模型提供方。</li>
               <li><strong>示例数据</strong>：注册时注入的 30 天记录是虚构的，用来展示结构；仪表盘会明确标注，不会假装成真实历史。</li>
-              <li><strong>没有埋点</strong>：仓库不包含第三方统计脚本；各省分数线数据来自公开教育考试院资料。</li>
+              <li><strong>没有埋点</strong>：仓库不包含第三方统计脚本。高考分数线是仓库里的离线快照，启动时不会导入；文件上的年份和 source 字符串没有在这里对照考试院复核。</li>
             </ul>
             <p className="landing-boundary">
               边界：Life Planner 是规划工具，不是心理治疗、医疗或财务建议。请用自己的判断做最终决定。

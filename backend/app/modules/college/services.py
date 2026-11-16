@@ -54,12 +54,14 @@ def query_rank(db: Session, year: int, province: str, score: float) -> Dict[str,
             "rank": None,
             "data_source": "no_data",
             "confidence": 0.0,
+            "confidence_kind": "unvalidated_constant",
         }
     return {
         "matched_score": int(row.score),
         "rank": int(row.rank) if row.rank is not None else None,
         "data_source": "province_ranks",
         "confidence": 0.95,
+        "confidence_kind": "unvalidated_constant",
     }
 
 
@@ -99,6 +101,7 @@ def _collect_colleges(
     )
     rows = db.execute(stmt).scalars().all()
 
+    # Tier weights are fixed labels, not measured admission probabilities.
     confidence = {"dash": 0.70, "steady": 0.88, "safe": 0.82}[target_tier]
     out: List[Dict[str, Any]] = []
     for r in rows:
@@ -112,6 +115,7 @@ def _collect_colleges(
                 "subject_type": r.subject_type,
                 "data_source": r.source or "college_scores",
                 "confidence": confidence,
+                "confidence_kind": "unvalidated_constant",
                 "year": int(r.year),
             }
         )
@@ -130,29 +134,48 @@ def predict_colleges(
       2. Pull 5 colleges from each tier.
       3. Save a CollegeRecommendation row.
     """
-    user_rank: Optional[int] = payload.rank
-    if not user_rank or user_rank <= 0:
+    user_rank: Optional[int] = payload.rank if payload.rank and payload.rank > 0 else None
+    rank_status = "from_input"
+    if user_rank is None:
         lookup = query_rank(db, int(payload.year or 2025), payload.province, float(payload.score))
-        user_rank = lookup["rank"] or 100_000
-    if not user_rank:
-        user_rank = 100_000
+        looked_up = lookup["rank"]
+        if looked_up:
+            user_rank = int(looked_up)
+            rank_status = "from_province_ranks"
+        else:
+            rank_status = "no_data"
 
     year = int(payload.year or 2025)
-
-    out = {
-        "user_rank": int(user_rank),
-        "year": year,
-        "province": payload.province,
-        "dash": _collect_colleges(db, year, payload.province, int(user_rank), "dash"),
-        "steady": _collect_colleges(db, year, payload.province, int(user_rank), "steady"),
-        "safe": _collect_colleges(db, year, payload.province, int(user_rank), "safe"),
-    }
+    out: Dict[str, Any]
+    if user_rank is None:
+        # Do not invent a rank. A missing province_ranks row stays empty.
+        out = {
+            "user_rank": None,
+            "rank_status": rank_status,
+            "year": year,
+            "province": payload.province,
+            "dash": [],
+            "steady": [],
+            "safe": [],
+            "note": "No province_ranks row matched this score. No placeholder rank was substituted.",
+        }
+    else:
+        out = {
+            "user_rank": int(user_rank),
+            "rank_status": rank_status,
+            "year": year,
+            "province": payload.province,
+            "dash": _collect_colleges(db, year, payload.province, int(user_rank), "dash"),
+            "steady": _collect_colleges(db, year, payload.province, int(user_rank), "steady"),
+            "safe": _collect_colleges(db, year, payload.province, int(user_rank), "safe"),
+            "note": None,
+        }
 
     # Save recommendation history (W29 fix: use correct field names)
     rec = CollegeRecommendation(
         user_id=int(user_id),
         score_input=float(payload.score),
-        rank_input=int(user_rank) if user_rank else None,
+        rank_input=int(user_rank) if user_rank is not None else None,
         province=payload.province,
         subject_combination=payload.subject_combination,
         dash_colleges=out["dash"],

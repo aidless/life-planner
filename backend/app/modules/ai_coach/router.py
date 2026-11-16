@@ -51,7 +51,9 @@ async def ai_analyze(
         "life": "你是人生规划教练，请分析以下数据并给出建议:",
         "general": "你是全能型AI助手，请分析以下数据并给出建议:",
     }
-    system_prompt = prompts.get(payload.module, prompts["general"])
+    system_prompt = prompts.get(payload.module, prompts["general"]) + (
+        " 回答须说明：这是未经验证的演示，不是医疗、财务、心理咨询或招生录取建议。"
+    )
     answer = await ai_client.analyze(system_prompt, payload.data, max_tokens=2048)
     return ApiResponse(success=True, data={"answer": answer})
 

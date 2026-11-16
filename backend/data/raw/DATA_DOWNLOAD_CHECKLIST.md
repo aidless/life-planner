@@ -1,3 +1,5 @@
+> AUTHOR_PATH: paths such as `F:/life-planner` or `F:\life-planner` in this file are the original author's Windows checkout. git clone, Docker Compose, and `make check` do not create that directory.
+
 # 高考投档数据下载清单
 
 **目标**：收集多省份、多年份的本科批投档数据，用于志愿填报预测系统

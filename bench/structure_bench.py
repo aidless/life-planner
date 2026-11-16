@@ -4,11 +4,10 @@
 度量后端的**业务模块注册**与**测试套件结构**，用 AST 静态分析（纯标准库），
 并计时整个解析过程。这些数字是 life-planner 的**真实结构基线**：
 
-  - 19 个业务模块（APIRouter 注册点）——对应 19 个 router.py；
-  - 78 个测试函数（7 个测试文件）——其中 60 为核心、18 为 B4 集成
-    （README「证明什么/不证明什么」声明，本基准用 AST 独立重算）；
-  - OpenAPI 结构由 app.main 的 19 个 router 构成（106 ops / 71 paths，
-    见 README 复算节，需完整依赖导入，本基准以 AST 注册点为准）。
+  - APIRouter(...) 调用次数和 test_* 函数次数，由这次运行写进 results.json。
+    不要把本文件里的旧数字当成承诺。
+  - OpenAPI 的 path / operation 数由 backend/tests/test_honesty_drift.py
+    对照 README honesty 块重算，不由本脚本测量。
 
 为什么这是基准：life-planner 是一个 FastAPI 全栈应用，其「规模与结构」
 是回归守卫——模块注册数与测试函数数不应随无关改动漂移。这里量的是
@@ -105,7 +104,7 @@ def main():
             "min_s": round(mn_parse, 6),
             "max_s": round(mx_parse, 6),
         },
-        "note": "OpenAPI 106 ops / 71 paths 需完整依赖导入（README 复算节）；本基准以 AST 注册点为结构基线",
+        "note": "AST counts from this run only. OpenAPI totals are locked by backend/tests/test_honesty_drift.py. Timing is one machine, not a performance claim.",
     }
 
     out = os.path.join(HERE, "results.json")

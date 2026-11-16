@@ -1,3 +1,5 @@
+# AUTHOR_PATH: F:/life-planner and F:\\life-planner below are the original author's Windows checkout.
+# git clone, Docker Compose, and make check do not create that directory.
 """
 Migrate database: add subject_type column to college_scores table.
 Update existing Guangdong data with subject_type from JSON files.

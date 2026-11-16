@@ -4,6 +4,7 @@ import { Typography, Card, Button, Table, Tag, Upload, Modal, Progress, Result, 
 import { ArrowLeftOutlined, UploadOutlined, FileSearchOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import type { UploadFile, UploadProps } from "antd";
 import apiClient from "@/api/client";
+import AdviceNote from "@/components/AdviceNote";
 
 const { Paragraph, Text } = Typography;
 
@@ -167,9 +168,10 @@ export default function ExamAnalyzer() {
         <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => { setDiagnosis(null); loadExams(); }} style={{ marginBottom: 16, paddingLeft: 0 }}>
           返回列表
         </Button>
+        <AdviceNote detail="诊断摘要如果来自模型，就是未经验证的演示，不是学习或医疗建议。没有 key 时不会假装分析成功。" />
         <Result
           icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
-          title="📊 错题诊断报告"
+          title="错题记录"
           subTitle={`${diagnosis.exam_name}（${diagnosis.subject}）| 得分：${diagnosis.score}/${diagnosis.total_score}`}
         />
         <Card title="📋 诊断摘要" style={{ marginBottom: 24, borderRadius: 12 }}>
@@ -229,6 +231,7 @@ export default function ExamAnalyzer() {
       <Button type="link" icon={<ArrowLeftOutlined />} onClick={() => navigate("/dashboard")} style={{ marginBottom: 16, paddingLeft: 0 }}>
         返回首页
       </Button>
+      <AdviceNote detail="上传和分数记录可以在没有 Claude key 时保存。分析文字未经验证，不是提分保证。" />
       <Card
         title={<span><FileSearchOutlined /> 错题分析记录</span>}
         extra={<Button type="primary" icon={<UploadOutlined />} onClick={() => { setUploadFileList([]); setUploadExamName(""); setUploadModalOpen(true); }}>上传试卷</Button>}

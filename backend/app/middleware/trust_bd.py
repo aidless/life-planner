@@ -20,7 +20,11 @@ from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-# 用 trust-cap 库
+# AUTHOR_PATH: the relative path below points at a checkout that lived outside
+# this repository on the original author's machine (test/2026-07-16-11-16-52).
+# git clone does not create it. Import fails closed in main.py when trust_cap
+# is missing. This module also skips JWT signature checks and has a hardcoded
+# LIFE_PLANNER_SECRET fallback; see FAILURE_MODES.md.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../../test/2026-07-16-11-16-52/capability/src"))
 from trust_cap import (
     Capability, SigningKey, ReferenceMonitor, AuditChain, PermissionDenied,
@@ -141,6 +145,8 @@ class TrustBoundaryMiddleware(BaseHTTPMiddleware):
 
         # Step 3: B4 capability check
         # Auto-grant capability for new user (first-request convenience; production: pre-grant via OAuth scope)
+        if _monitor is None or _audit is None or _user_key is None:
+            raise RuntimeError("B4 reference monitor is not initialized")
         try:
             existing_keys = set(_monitor._subject_keys.keys())
             if subject not in existing_keys:

@@ -2,239 +2,99 @@
 
 [![CI](https://github.com/aidless/life-planner/actions/workflows/ci.yml/badge.svg)](https://github.com/aidless/life-planner/actions/workflows/ci.yml)
 
-> AI 驱动的人生规划助手 — 覆盖学业、职业、考试、目标 4 大核心场景。
-> 基于 FastAPI + React 18 + TypeScript + Ant Design 5 + Claude API 构建。
+个人全栈人生规划演示：FastAPI + React 18 + TypeScript + Ant Design 5，可选 Claude API。注册后的计划、记录、目标和仪表盘可以在没有 Claude key 的情况下跑。
+它不是经过验证的建议，不是生产服务，也不是医疗、财务、心理咨询或招生录取指导。
+健康、财务、习惯三个前端仍是「即将上线」；仓库里的高考分数线是离线快照，启动时不会导入。
 
-![Life Planner 落地页](docs/assets/landing.png)
+姊妹仓：[lifeplanner](https://github.com/aidless/lifeplanner) 是同一主题下的另一个仓库（量化看板方向），不共享本仓的代码或数据库。
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+<!-- honesty:start -->
+openapi_paths: 71
+openapi_operations: 106
+backend_modules: 19
+tests_collected: 79
+tests_passed_default: 61
+tests_skipped_default: 18
+coming_soon_dimensions: health,finance,habits
+<!-- honesty:end -->
 
-> 🗂 **本仓是「人生规划」主题的主线仓**（FastAPI + React 全栈，4 大场景）。同主题姊妹仓：[lifeplanner](https://github.com/aidless/lifeplanner)（量化看板方向，实现完全不同、独立演进）。
-[![React 18](https://img.shields.io/badge/react-18-61dafb.svg)](https://react.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Tests: 60/60](https://img.shields.io/badge/tests-60%2F60-brightgreen.svg)](#测试)
-[![mypy: 0 errors](https://img.shields.io/badge/mypy-0%20errors-blue.svg)](./pyproject.toml)
+上面这块由 `backend/tests/test_honesty_drift.py` 对照 `app.openapi()` 和一次默认 pytest 重算。默认 pytest 会去掉 `ANTHROPIC_API_KEY` 和 `B4_INTEGRATION`。18 个跳过是 B4 集成测试，需要仓库外的 `trust-cap` 和本机 8001 端口上的后端。静态 shields「tests 60/60」「mypy 0 errors」已删除：它们不是 CI 算出来的。
 
-## 核心特性
+## 本地核对
 
-- **6 大核心模块**：仪表盘 / 日常记录 / 考试分析 / 人生目标 / 学习规划 / 高考志愿 / 职业发展 / 研究生规划 / AI 教练对话
-- **106 个 API 操作 / 19 个业务模块**（2026-11-01 用 `app.openapi()` 实测；另含 2 个应用级路由 `/api/health`、`/api/info`）：覆盖学业+职业+生活全流程
-- **AI 加持**：可选 Claude API 集成，提供智能分析与建议
-- **完整测试**：60 个核心自动化测试；前端 lint / tsc / production build 已接入 CI
-- **公开入口**：`/` 是落地页，登录 / 注册不再套应用导航；注册后自动注入的示例数据会在仪表盘明确标注
-- **诚实状态**：健康 / 财务 / 习惯的前端仍在建设，仪表盘标「即将上线」且不显示分数；其余维度可进入
-- **开箱即用**：Docker Compose 一键启动
-
-## 快速开始
-
-### 方式一：Docker（推荐）
+第一次安装需要网络。装完之后 `make check` 不调用 Claude，也不需要 key。
 
 ```bash
-git clone https://github.com/aidless/life-planner.git
-cd life-planner
-docker compose -f deploy/docker-compose.yml up -d --build
-```
-
-默认使用容器内 SQLite（`backend_data` 卷），不需要外部数据库；核心功能不需要 Claude key。长期使用请设置 `SECRET_KEY`（生产 compose 会强制要求）；未设置时本地会自动生成临时密钥，容器重启后需要重新登录。
-
-访问：
-- 前端：http://localhost:5173
-- API 文档：http://localhost:8000/docs
-
-### 方式二：本地开发
-
-**后端**：
-```bash
-cd backend
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt -r requirements-dev.txt
-.venv/bin/uvicorn app.main:app --reload --port 8000
+.venv/bin/pip install -r backend/requirements-dev.txt
+cd frontend && npm install && cd ..
+make check
 ```
 
-**前端**（另开终端）：
-```bash
-cd frontend
-npm install
-npm run dev
-```
+`make check` 等于 `make check-backend`（pytest + mypy `backend/app`）和 `make check-frontend`（eslint、`tsc --noEmit`、`npm run build`）。mypy 按 `pyproject.toml` 把代码当成 Python 3.11 来查，范围只有 `backend/app`，不含 `data_pipeline/`、`scripts/` 和测试。不要把某一次的 error 条数写成徽章。改这套检查之前，同一条 mypy 命令报过 7 个错误、查了 103 个文件；当时的徽章写的是 111 个文件、0 错误。
 
-**AI 功能**（可选）：
-```bash
-export ANTHROPIC_API_KEY="sk-ant-..."
-```
+开发时后端在 `backend/` 里启动：`uvicorn app.main:app --reload --port 8000`。前端是 `frontend/` 里的 `npm run dev`（5173）。没有 key 时，AI 教练返回固定句子「AI 分析服务未配置（缺少 ANTHROPIC_API_KEY）」，不假装成功。
 
-没有 key 时，计划、记录、目标、仪表盘等核心功能照常工作；AI 教练与 AI 分析会返回明确的“未配置”错误，而不是假装成功。
+## CI 实际跑什么
 
-### 测试
-
-```bash
-# 从仓库根目录运行（B4 集成测试默认跳过）
-backend/.venv/bin/python -m pytest -q
-```
-
-当前：**60 passed, 18 skipped**。B4 的 18 项需要仓库外的私有 `trust-cap` 包和 8001 上的 live backend，设置 `B4_INTEGRATION=1` 后才运行。
-
-## 功能模块
-
-| 模块 | 端点数 | 说明 |
-|---|---|---|
-| 学习规划 (Learning) | 11 | 学习任务 / 计划 / 进度 |
-| 意义系统 (Meaning) | 7 | 价值观与人生意义记录 |
-| 财务 (Finance) | 7 | 收支与预算 |
-| 高考志愿 (College) | 7 | 测一测 / 推荐 / 一分一段 / 收藏 |
-| 社交 (Social) | 6 | 人脉与社交记录 |
-| 健康 (Health) | 6 | 健康指标与追踪 |
-| 家庭 (Family) | 6 | 家庭事务管理 |
-| 考试分析 (ExamAnalyzer) | 6 | 试卷上传 + 错题诊断 |
-| 职业发展 (Career) | 6 | 简历 + 求职规划 |
-| 旅行 (Travel) | 5 | 行程规划 |
-| 心理 (Psychology) | 5 | 心理状态记录 |
-| 人生目标 (LifePlanner) | 5 | 长期目标 + 进度追踪 |
-| 亲密关系 (Intimacy) | 5 | 关系记录 |
-| 兴趣 (Interest) | 5 | 兴趣管理 |
-| 习惯 (Habits) | 5 | 习惯打卡 |
-| 日常记录 (DailyTracker) | 5 | 每日活动 + AI 反馈 |
-| 身份认证 (Auth) | 3 | register / login / me |
-| AI 教练 (AICoach) | 3 | Claude 对话 |
-| 仪表盘 (Dashboard) | 1 | 聚合总览 |
-| 应用级 (main) | 2 | /api/health + /api/info |
-
-总计：**106 个 API 操作 / 19 业务模块**（2026-11-01 用 `app.openapi()` 实测；
-另含 2 个应用级路由 `/api/health`、`/api/info`。端点数按 OpenAPI 操作精确计数，
-说明列按模块名归纳）。
-
-## 证明什么 / 不证明什么
-
-**证明什么**：
-- 19 个业务模块 + 2 应用级路由在 FastAPI 上注册成功（`app.openapi()` 返回
-  71 paths / 106 operations，实测）。
-- 60 项核心自动化测试通过（另 18 项 B4 集成默认跳过），3 次连跑稳定，
-  mypy 0 errors in 111 source files（README 顶部与测试节声明，本次复测确认
-  60 passed / 18 skipped）。
-- 核心功能不依赖 Claude key：无 key 时计划、记录、目标、仪表盘照常工作；
-  AI 教练与 AI 分析返回明确"未配置"错误，不假装成功。
-
-**不证明什么**：
-- B4 的 18 项集成测试需要仓库外的私有 `trust-cap` 包 + 8001 上 live backend，
-  设置 `B4_INTEGRATION=1` 后才运行——本机**未跑**这 18 项，**不构成**对
-  B4 完整性的经验证据。
-- `TrustBoundaryMiddleware` 在无 `trust_cap` 包时**静默禁用**
-  （`trust-cap unavailable`），本机实测如此——安全边界在此条件下是**降级**
-  状态，不是完整保护。
-- 健康 / 财务 / 习惯前端仍在建设（仪表盘标"即将上线"，不显示分数），
-  **不声称**这些维度已完整可用。
-- 端点数（106）是**当前代码**的 OpenAPI 计数；随版本演进会变，不作为
-  对外承诺的稳定接口数量。
-
-## 技术栈
-
-**后端**：Python 3.11 / FastAPI / SQLAlchemy 2.0 / SQLite / Pydantic v2 / pytest
-**前端**：React 18 / TypeScript / Vite / Ant Design 5 / Zustand / Axios
-**AI**：Anthropic Claude API（可选）
-**部署**：Docker Compose + Vercel（前端）+ GitHub Actions CI
-
-## 项目结构
-
-```
-life-planner/
-├── backend/                 # FastAPI 后端
-│   ├── app/
-│   │   ├── main.py          # FastAPI 入口
-│   │   ├── database.py      # SQLAlchemy sync 引擎
-│   │   ├── config.py        # Pydantic Settings
-│   │   ├── dependencies.py  # get_current_user 等
-│   │   ├── shared/          # BaseModel / 中间件
-│   │   └── modules/         # 业务模块
-│   │       ├── auth/        # 认证
-│   │       ├── college/     # 高考志愿
-│   │       ├── daily_tracker/
-│   │       ├── exam_analyzer/
-│   │       ├── life_planner/
-│   │       └── ai_coach/
-│   ├── data_pipeline/       # 爬虫 + 数据导入（cron）
-│   ├── tests/               # pytest 测试
-│   └── requirements.txt
-├── frontend/                # React 前端
-│   ├── src/
-│   │   ├── pages/           # 14 个页面
-│   │   ├── components/      # 共享组件
-│   │   ├── store/           # Zustand 状态
-│   │   ├── api/             # Axios 客户端
-│   │   └── types/           # TypeScript 类型
-│   ├── package.json
-│   └── vite.config.ts
-├── deploy/                  # Docker 部署
-│   ├── Dockerfile.backend
-│   ├── Dockerfile.frontend
-│   └── docker-compose.yml
-├── docs/                    # 文档
-│   ├── getting-started.md
-│   ├── architecture.md
-│   ├── api.md
-│   └── deployment.md
-├── data/                    # 数据 + sqlite
-│   └── life_planner.db
-├── pyproject.toml           # mypy + flake8 + pytest 配置
-├── .github/workflows/ci.yml # GitHub Actions
-├── LICENSE                  # MIT
-├── CHANGELOG.md             # 版本历史
-└── CONTRIBUTING.md          # 贡献指南
-```
-
-## 测试
-
-```bash
-cd backend
-$PY -m pytest tests/ -v     # 60 个测试，5 秒跑完
-```
-
-**当前状态**：60/60 通过 + 3 次连跑稳定 + mypy 0 errors in 111 source files。
-（2026-11-01 复测：`60 passed, 18 skipped`；18 项跳过为 B4 集成，需
-`B4_INTEGRATION=1` + 私有 `trust-cap` 包 + 8001 live backend。）
-
-### 复算（数字从哪来）
-
-| 数字 | 复算命令 | 来源 |
-|---|---|---|
-| 106 API 操作 / 71 paths | `python -c "import sys; sys.path.insert(0,'backend'); from app.main import app; print(len(app.openapi()['paths']), sum(len(v) for v in app.openapi()['paths'].values()))"` | `app.openapi()` 实测 |
-| 60 passed / 18 skipped | `python -m pytest backend/tests -q` | `backend/tests/` |
-| 19 业务模块 | `grep -rhoE 'APIRouter\(' backend/app --include='*.py' \| wc -l` | `backend/app/modules/` |
-
-**Fail-closed 声明（真实机制）**：
-AI 教练在无 `ANTHROPIC_API_KEY` 时**显式返回**"AI 分析服务未配置（缺少 ANTHROPIC_API_KEY）"（`backend/app/shared/ai_client.py:34-35`），**不假装成功**——这是 fail-closed 行为。但注意：`TrustBoundaryMiddleware` 在无 `trust_cap` 包时是**静默禁用**（`main.py:183` 仅 warning），那是**降级**状态，不是完整保护——两者不可混为一谈。
-
-### 结构基准（bench/results.json，2026-11-01 实测）
-
-```bash
-python3 bench/structure_bench.py
-```
-
-| 指标 | 实测值 |
+| Workflow | 做什么 |
 |---|---|
-| 业务模块（APIRouter 注册点） | 19 |
-| 测试文件 / 测试函数 | 7 / 78 |
-| 完整 AST 解析 | 0.140 s |
-| 模块计数（中位，20 次） | 0.091 s |
+| `.github/workflows/ci.yml` `verify` | 编译已跟踪的 Python；检查 Markdown 相对链接 |
+| `ci.yml` `mutation-control` | 故意写坏一个 `.py`，确认编译门会失败 |
+| `ci.yml` `secret-scan` | gitleaks，全历史 |
+| `ci.yml` `tests` | 安装 `backend/requirements-dev.txt`，然后 `make check-backend` |
+| `ci.yml` `frontend` | `npm install`，然后 `make check-frontend` |
+| `pr-checks.yml` | 只做 `compileall`，语法错误会失败。不跑测试 |
+| `packaging.yml` / `publish.yml` | 只有 `pyproject.toml` 含 `[project]` 或 `[build-system]` 才打包。本仓没有这两节，所以跳过。本仓不是 PyPI 包 |
+| `sast.yml` | 再跑一次 gitleaks |
 
-这是**结构回归基线**（AST 静态分析，纯标准库）：19 模块、78 测试函数不应随无关改动漂移。OpenAPI 106 ops / 71 paths 需完整依赖导入（见上表复算节），本基准以 AST 注册点为结构口径。
+`ci.yml` 的测试 job 用 Python 3.12。文档里的下限是 3.11+。CI 不跑 flake8，不构建镜像，也不部署。
 
-## 文档
+## 界面里什么能进
 
-- [docs/getting-started.md](./docs/getting-started.md) — 详细安装步骤
-- [docs/architecture.md](./docs/architecture.md) — 架构设计 + 数据库
-- [docs/api.md](./docs/api.md) — 34 端点参考
-- [docs/deployment.md](./docs/deployment.md) — 部署到阿里云 ECS / Vercel
+后端 `backend/app/modules/` 下 19 个 `router.py`：auth、life_planner、daily_tracker、exam_analyzer、ai_coach、college、health、finance、habits、career、psychology、family、interest、social、learning、travel、intimacy、meaning、dashboard。另有两个应用路由 `/api/health`、`/api/info`，不算在这 19 个里。
 
-## 路线图
+仪表盘 12 个维度里，健康、财务、习惯的 `status` 是 `coming_soon`，没有路由。其余维度有页面。注册时会写入约 30 天随机示例（含健康、财务、习惯的行），仪表盘会标明那是示例。已开放维度的平均分不再把这三个未开放维度算进去。
 
-- **v0.9（当前）**：6 核心模块 MVP 完成
-- **v1.0（2026 Q4）**：补 C/D（健康/财务/习惯/心理/家庭/兴趣/社交/学习 8 子域）
-- **v2.0（2027）**：移动端 + 国际化
+## 高考数据
 
-## 贡献
+这些文件在仓库里，**不会**在 `create_app` 或 Compose 启动时导入。新鲜克隆的 SQLite 是空的。志愿接口在没有 `province_ranks` 行时返回空列表，不再填一个占位位次。
 
-参考 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+| 文件 | 本次清点 |
+|---|---|
+| `backend/data/raw/scores/shandong_2025.json` | 21381 条，`source` 为 `sdzk.cn_2025`，`year` 为 2025 |
+| `backend/data/raw/scores/shandong_2024.json` | 20300 条，`source` 为 `sdzk.cn_2024`，`year` 为 2024；5721049 字节 |
+| `data/raw/scores/shandong_2025.json` | 同样 21381 条、`sdzk.cn_2025`；5310712 字节，与 backend 那份同大小。没有做哈希比对 |
+| `data/raw/scores/shandong_2024.json` | 同样 20300 条、`sdzk.cn_2024`；5030849 字节，和 backend 那份不一样大。没有逐条比对 |
+| `backend/data/raw/scores/guangdong_2024_*.json`、`guangdong_2025_*.json` | 有 `year`（2024 或 2025），**没有** `source` 字段 |
+| `backend/scripts/jiangsu_2025_physics.json` | `source` 形如 `jsjyksy_2025_*`，`year` 为 2025 |
 
-## License
+`backend/data_pipeline/crawlers/province_easy.py` 能为河南、广东写出 `source: "mock"` 的假数据。本次在已提交的 JSON 里没有找到 `"source": "mock"`。`backend/data/raw/DATA_DOWNLOAD_CHECKLIST.md` 仍把广东 2024 标成待下载，和树上的 JSON 不一致，不能拿那份清单当库存。
 
-[MIT](./LICENSE) — 自由使用、修改、商用。
+本次没有重新下载考试院文件，也没有对照官网复核。文件里的年份和 `source` 字符串就是来源说明；它们不是录取建议。`confidence` 字段是档位常数（`confidence_kind: unvalidated_constant`），不是测过的概率。
+
+## Docker Compose
+
+文件在 `deploy/docker-compose.yml`：backend（SQLite 卷，8000）和 frontend（nginx，宿主 5173）。frontend 把 `/api/` 代理到 compose 服务名 `backend`。生产文件 `deploy/docker-compose.prod.yml` 要求环境变量 `SECRET_KEY`。开发 compose 不要求；未设置时进程内会生成临时密钥，重启后旧 token 失效。
+
+本次审核环境没有 Docker，没有执行 `docker compose up`。不要把「文件存在」说成「已经启动成功」。
+
+## GitHub About 替换文案
+
+About 是仓库设置，这个 PR 改不到。当前 About 是：「AI 驱动的人生规划助手（FastAPI + React 18 + Claude API 可选）：学习/考试/高考志愿/职业等 21 个功能模块，Docker Compose 一键启动。」请换成：
+
+> 个人全栈人生规划演示（FastAPI + React 18）。不是经过验证的建议，不是生产服务，也不是医疗、财务或招生指导。19 个后端模块；健康、财务、习惯页面仍是即将上线。Claude 可选。Compose 文件在 deploy/docker-compose.yml，本次审核没有启动容器。
+
+Topics 里的 `saas`、`subscription` 不是已上线的付费产品。本仓没有支付集成。
+
+## 作者机器上的路径
+
+`F:/life-planner` 和 `F:\life-planner` 是原作者的 Windows 目录。clone、Compose 和 `make check` 都不会创建它。带这些路径的文件在开头有 `AUTHOR_PATH` 标记。`backend/app/middleware/trust_bd.py` 里指向仓库外 `test/2026-07-16-11-16-52` 的相对路径同样是作者机器上的布局。
+
+## 失败方式
+
+见 [FAILURE_MODES.md](./FAILURE_MODES.md)。
+
+## 许可证
+
+[MIT](./LICENSE)。

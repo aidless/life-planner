@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, Button, Typography, Space, List, Tag } from "antd";
 import { RobotOutlined, SendOutlined } from "@ant-design/icons";
 import apiClient from "@/api/client";
+import AdviceNote from "@/components/AdviceNote";
 
 const { Title, Paragraph } = Typography;
 
@@ -40,7 +41,8 @@ export default function AICoach() {
   return (
     <div>
       <Title level={3}>AI 教练</Title>
-      <Paragraph type="secondary">选择领域，向 AI 教练提问，获取个性化指导</Paragraph>
+      <AdviceNote detail="没有 Claude key 时，回复是固定的「未配置」句子。有 key 时，回复仍是未经验证的演示，不是医疗、财务、心理咨询或招生录取指导。" />
+      <Paragraph type="secondary">选择领域后发送问题。输出不会因为写了「教练」就变成专业意见。</Paragraph>
 
       <div style={{ marginBottom: 16 }}>
         <Space wrap>

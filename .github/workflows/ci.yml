@@ -1,7 +1,7 @@
 # CI for life-planner
-# FastAPI + React app. The verify job keeps the existing fail-closed
-# byte-compile / markdown / secret gates; tests and frontend run the real
-# consumer path (60 backend tests + lint + typecheck + production build).
+# verify / mutation-control / secret-scan stay as they are.
+# tests and frontend call the Makefile targets. Counts live in the README
+# honesty block and are recomputed by backend/tests/test_honesty_drift.py.
 name: CI
 
 on:
@@ -140,8 +140,8 @@ jobs:
           python-version: "3.12"
       - name: Install backend + test dependencies
         run: python -m pip install -r backend/requirements-dev.txt
-      - name: Pytest (60 core tests; B4 integration opt-in)
-        run: python -m pytest -q
+      - name: Pytest and mypy (make check-backend)
+        run: make check-backend
 
   frontend:
     runs-on: ubuntu-latest
@@ -153,12 +153,5 @@ jobs:
       - name: Install
         working-directory: frontend
         run: npm install --no-audit --no-fund
-      - name: Lint
-        working-directory: frontend
-        run: npm run lint
-      - name: Typecheck
-        working-directory: frontend
-        run: npx tsc --noEmit
-      - name: Production build
-        working-directory: frontend
-        run: npm run build
+      - name: Lint, typecheck, production build (make check-frontend)
+        run: make check-frontend

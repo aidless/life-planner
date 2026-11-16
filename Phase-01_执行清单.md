@@ -1,3 +1,5 @@
+> AUTHOR_PATH: paths such as `F:/life-planner` or `F:\life-planner` in this file are the original author's Windows checkout. git clone, Docker Compose, and `make check` do not create that directory.
+
 # Phase -1 执行清单：数据获取与验证（第1-12周）
 
 > 本文档是 `DESIGN_v0.2.0.md` 第9章路线图的**可执行版本**。

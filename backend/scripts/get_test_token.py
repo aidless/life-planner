@@ -1,3 +1,5 @@
+# AUTHOR_PATH: F:/life-planner and F:\\life-planner below are the original author's Windows checkout.
+# git clone, Docker Compose, and make check do not create that directory.
 import asyncio
 import sys
 sys.path.insert(0, 'F:/life-planner/backend')

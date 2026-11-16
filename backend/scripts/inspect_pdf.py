@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# AUTHOR_PATH: F:/life-planner and F:\\life-planner below are the original author's Windows checkout.
+# git clone, Docker Compose, and make check do not create that directory.
 """
 检查PDF结构，用于了解不同省份的PDF格式
 """

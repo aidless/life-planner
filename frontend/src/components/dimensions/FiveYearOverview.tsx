@@ -15,9 +15,9 @@ export default function FiveYearOverview() {
     <Card
       title={
         <span>
-          🎯 5 年人生总览{" "}
+          5 年示例时间轴{" "}
           <Text type="secondary" style={{ fontSize: 12, fontWeight: "normal" }}>
-            （今年 → 5 年后）
+            写死在前端，不是你的计划
           </Text>
         </span>
       }

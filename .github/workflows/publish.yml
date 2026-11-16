@@ -19,12 +19,12 @@ jobs:
       - name: Build
         run: |
           set -euo pipefail
-          python -m pip install --quiet build
-          if ls pyproject.toml setup.py setup.cfg >/dev/null 2>&1; then
+          if python -c 'import pathlib,sys,tomllib; d=tomllib.loads(pathlib.Path("pyproject.toml").read_text()); sys.exit(0 if ("build-system" in d or "project" in d) else 1)'; then
+            python -m pip install --quiet build
             python -m build --sdist --wheel --outdir dist/
           else
-            echo "no packaging metadata; skipping build"
+            echo "pyproject.toml has no [project] or [build-system]; not a distributable package. skipping build"
           fi
       - name: Publish (trusted publishing)
-        if: ${{ github.event_name == 'release' && hashFiles('pyproject.toml', 'setup.py', 'setup.cfg') != '' }}
+        if: ${{ github.event_name == 'release' && hashFiles('dist/**') != '' }}
         uses: pypa/gh-action-pypi-publish@2442bad8f54b06a326f3030ef5e6a7a674118557 # release/v1

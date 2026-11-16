@@ -1,6 +1,7 @@
 import { Card, Typography, Input, Button, Form, Select } from "antd";
 import { useState } from "react";
 import apiClient from "@/api/client";
+import AdviceNote from "@/components/AdviceNote";
 
 const { Title, Paragraph } = Typography;
 
@@ -24,7 +25,8 @@ export default function CareerAdvisor() {
   return (
     <div>
       <Title level={3}>职业发展</Title>
-      <Paragraph type="secondary">从实习到求职，AI 帮你规划职业道路</Paragraph>
+      <AdviceNote />
+      <Paragraph type="secondary">可选的 Claude 调用。没有 key 时不会生成内容。输出不是职业资格或录用建议。</Paragraph>
       <Card style={{ maxWidth: 700 }}>
         <Form layout="vertical" onFinish={handleAnalyze}>
           <Form.Item name="stage" label="当前阶段">
